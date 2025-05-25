@@ -31,16 +31,45 @@ const authConfig: NextAuthConfig = {
 
         return {
           id: user.id,
-          name: user.fullname,
+          name: user.name,
           email: user.email,
-          // ✅ These fields must match what's in `next-auth.d.ts`
-          fullname: user.fullname,
+          fullname: user.name,
           role: user.role,
           emailVerified: user.emailVerified ?? null,
         }
       },
     }),
   ],
+  callbacks: {
+    async jwt({ token, user, account }) {
+      if (account && user) {
+        return {
+          ...token,
+          id: user.id,
+          name: user.name,
+          email: user.email ?? null,
+          role: account.provider === 'credentials' ? 'ADMIN' : 'USER',
+        }
+      }
+      return token
+    },
+    async session({ session, token }) {
+      if (session.user && token) {
+        session.user.id = token.id as string
+        session.user.name = token.name
+        session.user.role = token.role as 'USER' | 'ADMIN'
+        session.user.email = token.email as string ?? null
+      }
+      return session
+    }
+
+  },
+
+  session: {
+    strategy: "jwt",
+    maxAge: 5 * 24 * 60 * 60, // 5 days
+  },
+  secret: process.env.AUTH_SECRET,
 }
 
 export default authConfig

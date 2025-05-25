@@ -13,6 +13,7 @@ export const login = async (data: z.infer<typeof loginSchema>) => {
     if (!validated.success) {
         return {error:'Invalid Fields'}
     }
+
     const {email,password} = validated.data
 
     const existingUser = await getAdminByEmail(email)
@@ -31,9 +32,6 @@ export const login = async (data: z.infer<typeof loginSchema>) => {
         }
         return {success:'Confirmation email sent!'}
     }
-
-    
-
     try {
         await signIn('credentials',
             {

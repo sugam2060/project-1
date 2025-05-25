@@ -10,6 +10,13 @@ import { CardContent, CardFooter } from '../ui/card'
 import { Button } from '../ui/button'
 import { registerNewUser } from '@/actions/usersActions/register'
 
+type RegisterResponse =
+  | { success: string }
+  | {
+    error: string
+
+  };
+
 
 
 const RegisterForm = () => {
@@ -33,11 +40,15 @@ const RegisterForm = () => {
     setError('')
     setSuccess('')
     startTransition(() => {
-      registerNewUser(values).then((data) => {
-        setError(data?.error || '')
-        setSuccess(data?.success || '')
-        form.reset()
-      })
+      registerNewUser(values).then((data: RegisterResponse) => {
+        if ('error' in data) {
+          setError(data.error);
+        } else {
+          setSuccess(data.success);
+        }
+        form.reset();
+      });
+
     })
   }
 
@@ -126,7 +137,7 @@ const RegisterForm = () => {
           <p>{formSuccess}</p>
         </div>}
         <CardFooter className="flex justify-between mt-2">
-          <Button disabled={isPending} type="submit" className="w-full cursor-pointer">{isPending ? 'Creating Account': 'Create Account'}</Button>
+          <Button disabled={isPending} type="submit" className="w-full cursor-pointer">{isPending ? 'Creating Account' : 'Create Account'}</Button>
         </CardFooter>
       </form>
     </Form>

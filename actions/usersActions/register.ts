@@ -1,75 +1,68 @@
 'use server'
+
 import { registerSchema } from "@/schemas/registerSchema";
 import { z } from "zod";
 import { db } from "@/lib/db";
 import bcrypt from "bcryptjs";
-import { getAdminByEmail } from "./getAdminByEmail";
 import { generateVerificationToken } from "@/lib/tokens";
 import { getVerificationEmailHTML } from "@/data/emailVerificationMailHTML";
 import { sendMail } from "@/lib/sendMail";
 
+const StageMail = async (email: string) => {
+  const verToken = await generateVerificationToken(email)
+  const link = `${process.env.NEXTAPP_URI}/verify?token=${verToken.token}`
+  const emailHTML = getVerificationEmailHTML(link)
+  await sendMail({ to: email, subject: 'Verify your email', html: emailHTML })
+  return { success:'Confirmation email sent!' }
+}
+
 export const registerNewUser = async (values: z.infer<typeof registerSchema>) => {
-    const validated = registerSchema.safeParse(values)
-    if (!validated.success) {
-        return { error: 'Invalid Fields' }
-    }
+  const validated = registerSchema.safeParse(values)
+  if (!validated.success) return { error:'Invalid Fields' }
 
-    const { name, email, password,private_key } = validated.data
+  const { name, email, password, private_key } = validated.data
+  const hashed = await bcrypt.hash(password, 10)
 
-    const existingUser = await getAdminByEmail(email)
+  const existingUser = await db.user.findUnique({ where: { email } })
+  const key = await db.adminBuffer.findFirst({ where: { email } })
 
-    if (existingUser && existingUser.emailVerified) {
+  if (existingUser) {
+    if (existingUser.role === 'ADMIN') {
+      if (existingUser.emailVerified) {
         return { error: 'User already exists' }
+      } else {
+        const message = await StageMail(email)
+        return message
+      }
+    } else {
+      if (key?.private_key !== private_key) return { error: 'Invalid Private Key' }
+
+      await db.user.update({
+        where: { email },
+        data: { name, password: hashed, role: 'ADMIN' }
+      })
+
+      await db.adminBuffer.delete({ where: { email, private_key } })
+
+      const message = await StageMail(email)
+      return message
     }
-
-    const adminBuffer = await db.adminBuffer.findFirst({
-        where: {
-            email:email
-        }
-    })
-
-    if(adminBuffer?.private_key !== private_key){
-        return { error: 'Invalid private key' }
-    }else{
-        await db.adminBuffer.delete({
-            where:{
-                private_key:private_key
-            }
-        })
-    }
-
-    const verificationToken = await generateVerificationToken(email)
-
-    if (existingUser && !existingUser.emailVerified) {
-        const link = `${process.env.NEXTAPP_URI}/verify?token=${verificationToken.token}`
-        const html = getVerificationEmailHTML(link)
-        const mailStatus = await sendMail({ to: email, subject: 'Verify your email', html })
-        if(!mailStatus.success){
-            return {error:mailStatus.error}
-        }
-        return { success: 'Confirmation email sent!' }
-    }
-
-    const hashed = await bcrypt.hash(password, 10)
+  } else {
     try {
-        const newUser = await db.user.create({
-            data: {
-                fullname: name,
-                email: email,
-                password: hashed,
-            }
-        })
+      if (key?.private_key !== private_key) return { error: 'Invalid Private Key' }
+      await db.user.create({
+        data: { name, email, password: hashed, role: 'ADMIN' }
+      })
 
-        const link = `${process.env.NEXTAPP_URI}/verify?token=${verificationToken.token}`
-        const html = getVerificationEmailHTML(link)
-        const mailStatus = await sendMail({ to: email, subject: 'Verify your email', html })
-        if(!mailStatus.success){
-            return {error:mailStatus.error}
-        }
-        return { success: 'Confirmation email sent!' }
-    } catch (error) {
-        console.log('register Error: ', error)
-        return { error: 'Something went wrong' }
+      await db.adminBuffer.delete({ where: { email, private_key } })
+      const message = await StageMail(email)
+      return message
+    } catch (error: any) {
+      if (error.code === 'P2002') {
+        return { error: 'User already exists' }
+      }
+      console.error('Registration error:', error)
+      return { error: 'Error registering user' }
     }
-
+  }
 }

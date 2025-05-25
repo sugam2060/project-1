@@ -19,38 +19,51 @@ enum UserRole {
   USER
 }
 
-model Account {
-  id                String  @id @default(uuid())
-  name              String?
-  role              UserRole @default(USER)
-  email             String?
-  image            String?
-  provider          String?
-}
-
-
 model VerificationToken {
-  id String @id @default(uuid())
-  email      String
-  token      String   @unique
-  expires    DateTime
+  id      String   @id @default(uuid())
+  email   String
+  token   String   @unique
+  expires DateTime
+
   @@unique([email, token])
 }
 
 model adminBuffer {
-  id String @id @default(uuid())
-  fullname String
-  email String 
+  id          String @id @default(uuid())
+  fullname    String
+  email       String
   private_key String @unique
+
   @@unique([email, private_key])
 }
 
 model User {
-  id             String   @id @default(cuid())
-  fullname       String
-  email          String  @unique
-  emailVerified  DateTime?     // ✅ Fix this from Boolean to DateTime?
-  image          String?
-  password       String
-  role           UserRole @default(ADMIN)
+  id            String    @id @default(cuid())
+  name          String
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  password      String    @default("")
+  role          UserRole  @default(USER)
+
+  accounts Account[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id])
+
+  @@unique([provider, providerAccountId])
 }

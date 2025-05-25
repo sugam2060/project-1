@@ -1,78 +1,70 @@
 import NextAuth from "next-auth"
 import authConfig from "./auth.config"
-import { db } from "./lib/db"
+import { db } from "@/lib/db"
 import { getAdminByEmail } from "./actions/usersActions/getAdminByEmail"
- 
-export const { handlers:{GET,POST}, signIn, signOut, auth } = NextAuth({
-     ...authConfig,
-    session:{
-        strategy:'jwt',
-        maxAge:5 * 24 * 60 * 60, // 5 days in seconds
+import { PrismaAdapter } from '@auth/prisma-adapter'
+
+export const { handlers: { GET, POST }, signIn, signOut, auth } = NextAuth({
+    ...authConfig,
+    adapter: PrismaAdapter(db),
+    session: {
+        strategy: 'jwt',
+        maxAge: 5 * 24 * 60 * 60, // 5 days
     },
-    callbacks:{
-        async session({token,session}){
-            if(token && session.user){
-                session.user.role = token.role as 'USER' | 'ADMIN'
-                session.user.fullname = token.fullname as string
-            }
-            return session
-        },
-        async jwt({token,user,account}){
+    callbacks: {
+        ...authConfig.callbacks,
+        async signIn({ user, account,email }) {
+            if (account?.provider !== 'credentials') {
 
-            if(account && user){
-                if(account.provider === 'google'){
-                    return {
-                        ...token,
-                        role:'USER'
-                    }
+                if (!user.email) {
+                    return false
                 }
 
-                if(account.provider === 'credentials'){
-                    return {
-                        ...token,
-                        role:'ADMIN',
-                        fullname:user.fullname 
-                    }
-                }
+                // Find existing user by email
+                const existingUser = await db.user.findUnique({
+                    where: { email: user.email }
+                })
 
-            }
-            return token
-        },
-        async signIn({user,account}){
-            if(account?.provider !== 'credentials'){
-                if(user){
-                    const userExist = await db.account.findFirst({
-                        where:{
-                            email:user.email
+
+
+                if (existingUser) {
+
+                    await db.account.upsert({
+                        where: {
+                            provider_providerAccountId: {
+                                provider: account?.provider as string,
+                                providerAccountId: account?.providerAccountId as string,
+                            }
+                        },
+                        update: {
+                            userId: existingUser.id,
+                            access_token: account?.access_token ?? null,
+                            refresh_token: account?.refresh_token ?? null,
+                            // ...other fields
+                        },
+                        create: {
+                            userId: existingUser.id,
+                            provider: account?.provider as string, // <-- Add this line!
+                            providerAccountId: account?.providerAccountId as string,
+                            type: account?.type as string,
+                            access_token: account?.access_token ?? null,
+                            refresh_token: account?.refresh_token ?? null,
+                            // ...other fields
                         }
                     })
-                    if(userExist){
-                        return true
-                    }else{
-                        await db.account.create({
-                            data:{
-                                email:user.email,
-                                name:user.name,
-                                image:user.image,
-                                provider:account?.provider
-                            }
-                        })
-                    }
+                    return true
                 }
+
+                //if new user then let them sign up
                 return true
             }
 
+            // Credentials login: check emailVerified
             const existingUser = await getAdminByEmail(user.email as string)
-
-            if(!existingUser?.emailVerified) return false 
+            if (!existingUser?.emailVerified && existingUser?.role === 'ADMIN') return false
 
             return true
-            
         }
+
     },
-    pages:{
-        // signIn:'/auth/login',
-    },
-    // adapter:PrismaAdapter(db),
-    secret:process.env.AUTH_SECRET
 })
