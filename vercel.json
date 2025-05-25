@@ -3,10 +3,10 @@
   "buildCommand": "prisma generate && next build",
   "functions": {
     "api/**/*.js": {
-      "runtime": "nodejs22.x"
+      "runtime": "nodejs18.x"
     },
     "src/pages/api/**/*.ts": {
-      "runtime": "nodejs22.x"
+      "runtime": "nodejs18.x"
     }
   }
 }
