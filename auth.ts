@@ -3,10 +3,11 @@ import authConfig from "./auth.config"
 import { db } from "@/lib/db"
 import { getAdminByEmail } from "./actions/usersActions/getAdminByEmail"
 import { PrismaAdapter } from '@auth/prisma-adapter'
+import {Adapter} from 'next-auth/adapters'
 
 export const { handlers: { GET, POST }, signIn, signOut, auth } = NextAuth({
     ...authConfig,
-    adapter: PrismaAdapter(db),
+    adapter: <Adapter> PrismaAdapter(db),
     session: {
         strategy: 'jwt',
         maxAge: 5 * 24 * 60 * 60, // 5 days
