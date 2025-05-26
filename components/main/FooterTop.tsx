@@ -1,4 +1,4 @@
-import { Clock, Mail, MapPin, Phone } from 'lucide-react'
+import { Clock, Mail, MapPin } from 'lucide-react'
 import Link from 'next/link'
 import React from 'react'
 import { IoLogoWhatsapp } from "react-icons/io";
@@ -52,7 +52,7 @@ const FooterTop = () => {
     );
 };
 
-//https://mail.google.com/mail/?view=cm&fs=1&to=someone@example.com
+
 
 const ContactItem = ({ item }: { item: Props }) => {
     // Determine the URL based on item title

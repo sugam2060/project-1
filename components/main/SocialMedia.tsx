@@ -38,7 +38,7 @@ const SocialMedia = ({ className, iconClassName, tooptipClassName }: props) => {
         <TooltipProvider>
 
             <div className={cn('flex items-center gap-3.5', className)}>
-                {socialLinks.map((item, idx) => (
+                {socialLinks.map((item) => (
                     <Tooltip key={item.title}>
                         <TooltipTrigger asChild>
                             <Link href={item.href} className={cn('p-2 border rounded-full hover:text-white hover:border-white hoverEffect', iconClassName)}>

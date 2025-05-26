@@ -1,7 +1,6 @@
 'use client'
 import React from 'react'
 import { AdminHeaderData, rootHeaderData } from '@/constant'
-import { usePathname } from 'next/navigation'
 import { useOutsideClick } from '@/hooks/useOutsideClick'
 import { motion } from 'motion/react'
 import { X } from 'lucide-react'
@@ -13,7 +12,6 @@ interface props {
     HeaderData: typeof rootHeaderData | typeof AdminHeaderData
 }
 const SideBar = ({ isOpen, onClose,HeaderData}: props) => {
-    const pathname = usePathname()
     const sideBarref = useOutsideClick<HTMLDivElement>(onClose)
     return (
         <div className={`fixed inset-y-0 left-0 z-50 bg-[#151515]/50 shadow-xl hoverEffect cursor-auto w-full ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
@@ -24,7 +22,7 @@ const SideBar = ({ isOpen, onClose,HeaderData}: props) => {
                     </button>
                 </div>
                 <div className='flex flex-col gap-3.5 text-base font-semibold tracking-wide'>
-                    {HeaderData?.map((item, idx) => (
+                    {HeaderData?.map((item) => (
                         <Link onClick={onClose} key={item?.title} href={item.href} className={`hover:text-white hoverEffect w-12`}>{item?.title}
                         </Link>
                     ))}

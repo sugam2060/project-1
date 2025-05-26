@@ -21,7 +21,7 @@ const transporter = nodemailer.createTransport({
 })
 
 // Verify the transporter connection
-transporter.verify((error, success) => {
+transporter.verify((error) => {
   if (error) {
     console.error('Nodemailer Transport Error:', error)
   } else {
@@ -43,8 +43,13 @@ export const sendMail = async ({ to, subject, text, html }: SendEmailOptions) =>
     const info = await transporter.sendMail(mailOptions)
     console.log('Email sent: %s', info.messageId)
     return { success: true, messageId: info.messageId }
-  } catch (error: any) {
-    console.error('Email sending error:', error)
+  } catch (error: unknown) {
+  if (error instanceof Error) {
+    console.error('Email sending error:', error.message)
     return { success: false, error: error.message }
+  } else {
+    console.error('Email sending error:', error)
+    return { success: false, error: 'Unknown error' }
   }
+}
 }

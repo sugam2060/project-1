@@ -11,7 +11,7 @@ interface props {
 }
 
 
-const HeaderMenu = ({className,HeaderData}: props) => {
+const HeaderMenu = ({HeaderData}: props) => {
   const pathname = usePathname()
   return (
     <div className='hidden md:inline-flex w-1/3 items-center gap-5 text-sm capitalize font-semibold text-[#151515]/80'>
