@@ -6,7 +6,6 @@ const AvatorIcon = forwardRef<HTMLSpanElement, { session: Session | null }>(
   ({ session }, ref) => {
     const name = session?.user.name || ''
   const parts = name.trim().split(' ');
-  console.log(session)
     return (
       <Avatar ref={ref} className='cursor-pointer w-7 h-7'>
         <AvatarImage src={session?.user.image || ''} alt="user" />

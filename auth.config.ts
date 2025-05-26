@@ -49,6 +49,7 @@ const authConfig: NextAuthConfig = {
           ...token,
           id: user.id,
           name: user.name,
+          image:user.image ?? null,
           email: user.email ?? null,
           role: account.provider === 'credentials' ? 'ADMIN' : 'USER',
         }
@@ -59,6 +60,7 @@ const authConfig: NextAuthConfig = {
       if (session.user && token) {
         session.user.id = token.id as string
         session.user.name = token.name
+        session.user.image = token.image as string | null
         session.user.role = token.role as 'USER' | 'ADMIN'
         session.user.email = token.email as string ?? null
       }
