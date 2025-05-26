@@ -34,6 +34,7 @@ const authConfig: NextAuthConfig = {
           id: user.id,
           name: user.name,
           email: user.email,
+          image: user.image ?? null,
           fullname: user.name,
           role: user.role,
           emailVerified: user.emailVerified ?? null,
