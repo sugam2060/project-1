@@ -30,6 +30,7 @@ const ProductUpload = () => {
             image: [],
             slug: '',
             stock: '1',
+            discount:'0',
             brand: 'Kalika kasta furniture udyog',
         },
     })
@@ -85,6 +86,18 @@ const ProductUpload = () => {
                         render={({ field }) => (
                             <FormItem>
                                 <FormLabel>Price</FormLabel>
+                                <FormControl>
+                                    <Input min={0} disabled={isPending} type='number' {...field} className='font-semibold' />
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )}
+                    />
+                    <FormField control={form.control}
+                        name='discount'
+                        render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Discount</FormLabel>    
                                 <FormControl>
                                     <Input min={0} disabled={isPending} type='number' {...field} className='font-semibold' />
                                 </FormControl>

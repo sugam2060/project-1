@@ -1,8 +1,8 @@
 import React from 'react'
 import { Skeleton } from '../ui/skeleton'
 
-const ProductLoadingSkeleton = () => {
-    const array = Array.from({ length: 8 }, (_, index) => index + 1);
+const ProductLoadingSkeleton = ({length}:{length:number}) => {
+    const array = Array.from({ length }, (_, index) => index + 1);
     return (
         <>
             {array.map((_, idx) => (

@@ -74,8 +74,9 @@ model Product {
   description String
   category    String
   stock       Int
-  brand       String @default("Kalika kasta furniture udyog")
-  slug       String @unique
+  brand       String @default("Kalika kasta furniture udyog") 
+  discount    Int? @default(0)
+  slug        String @unique
   images      ProductImage[] // one product has many images
 }
 

@@ -15,7 +15,7 @@ cloudinary.config({
 export const uploadProducts = async (products: z.infer<typeof ProductFieldsSchema>) => {
     const validated = ProductFieldsSchema.safeParse(products)
     if (!validated.success) return { error: 'Invalid product data' }
-
+    console.log(validated.data)
     const slugExists = await db.product.findUnique({
         where:{
             slug:validated.data.slug
