@@ -1,6 +1,4 @@
-import React, { Suspense } from 'react'
 import { cn } from '@/lib/utils'
-import ProductLoadingSkeleton from './ProductLoadingSkeleton'
 import ProductsCard from './ProductsCard'
 import { fetchProducts } from '@/actions/productActions/fetchData'
 
