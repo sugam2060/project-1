@@ -13,6 +13,7 @@ cloudinary.config({
 
 
 export const uploadProducts = async (products: z.infer<typeof ProductFieldsSchema>) => {
+
     const validated = ProductFieldsSchema.safeParse(products)
     if (!validated.success) return { error: 'Invalid product data' }
     console.log(validated.data)
@@ -65,6 +66,7 @@ export const uploadProducts = async (products: z.infer<typeof ProductFieldsSchem
                 },
                 slug: validated.data.slug,
                 stock: parseInt(validated.data.stock),
+                discount:parseFloat(validated.data.discount),
                 brand: validated.data.brand
             }
         })
