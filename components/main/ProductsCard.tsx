@@ -15,7 +15,7 @@ interface productsCardProps {
 const ProductsCard = ({ products }: productsCardProps) => {
     const pathname = usePathname()
     return (
-        <div className='overflow-hidden group text-sm rounded-lg'>
+        <div className='overflow-hidden group text-sm border border-zinc-200 rounded-lg'>
             <div className='bg-gradient-to-r from-zinc-200 via-zinc-300 to-zinc-200 overflow-hidden relative'>
                 {products.images && <Link href={pathname.startsWith('/admin') ? `/admin/product/${products.slug}` : `/product/${products.slug}`} className='w-full h-full flex items-center justify-center'>
                     <Image src={new URL(products.images[0].imageUrl).href} width={500} height={500} alt='product' className={`w-full h-72 object-cover overflow-hidden  hoverEffect ${parseInt(products.stock) !== 0 && 'group-hover:scale-105'}`} />

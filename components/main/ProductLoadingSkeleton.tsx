@@ -1,10 +1,11 @@
 import React from 'react'
 import { Skeleton } from '../ui/skeleton'
+import { cn } from '@/lib/utils';
 
-const ProductLoadingSkeleton = ({length}:{length:number}) => {
+const ProductLoadingSkeleton = ({length,className}:{length:number,className?:string}) => {
     const array = Array.from({ length }, (_, index) => index + 1);
     return (
-        <>
+        <div className={cn('',className)}>
             {array.map((_, idx) => (
                 <div
                     key={idx}
@@ -15,7 +16,7 @@ const ProductLoadingSkeleton = ({length}:{length:number}) => {
                     <Skeleton className="h-10 mx-2 bg-gray-400" />
                 </div>
             ))}
-        </>
+        </div>
     );
 };
 
