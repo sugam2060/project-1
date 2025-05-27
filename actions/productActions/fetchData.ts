@@ -1,6 +1,4 @@
 import { db } from "@/lib/db";
-import { ProductFieldsSchema } from "@/schemas/ProductUploadSchema";
-
 
 export const fetchProducts = async ({number,page}:{number:number,page:number}) => {
     const skip = (page - 1) * number;
