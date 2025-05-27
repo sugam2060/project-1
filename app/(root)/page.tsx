@@ -1,7 +1,4 @@
 
-import { Suspense } from "react";
-import ProductLoadingSkeleton from "@/components/main/ProductLoadingSkeleton";
-import Container from "@/components/main/Container";
 
 export default function RootPage() {
 
