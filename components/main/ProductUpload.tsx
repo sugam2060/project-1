@@ -14,6 +14,7 @@ import { catogoriesData } from '@/constant/index'
 import { Button } from '../ui/button'
 import { generateSlug } from '@/lib/generateSlug'
 import { uploadProducts } from '@/actions/productActions/uploadProducts'
+import { Loader2 } from 'lucide-react'
 
 const ProductUpload = () => {
     const [formSuccess, setFormSuccess] = React.useState<string>('')
@@ -217,8 +218,9 @@ const ProductUpload = () => {
                 {formError && (<div className='mx-3 py-1 mt-2 rounded-md bg-red-500/90 text-black font-semibold text-center px-2 space-y-1'>{formError}</div>)}
                 {formSuccess && (<div className='mx-3 py-1 mt-2 rounded-md bg-green-500/90 text-center font-semibold  px-2'>{formSuccess}</div>)}
                 <CardFooter>
-                    <Button disabled={isPending} type="submit" className="w-full cursor-pointer my-2">
+                    <Button disabled={isPending} type="submit" className="w-full cursor-pointer my-2 relative">
                         Upload Product
+                        {isPending && <Loader2  className='absolute right-8 top-1/2 -translate-x-1/2 -translate-y-1/2 animate-spin'/>}
                     </Button>
                 </CardFooter>
             </form>

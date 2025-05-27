@@ -7,6 +7,7 @@ import Image from 'next/image'
 import PriceView from './PriceView'
 import { usePathname } from 'next/navigation'
 import DeleteProductsButton from './DeleteProductsButton'
+import { motion } from 'motion/react'
 
 interface productsCardProps {
     products: z.infer<typeof ProductFieldFetchsSchema>
@@ -15,7 +16,12 @@ interface productsCardProps {
 const ProductsCard = ({ products }: productsCardProps) => {
     const pathname = usePathname()
     return (
-        <div className='overflow-hidden group text-sm border border-zinc-200 rounded-lg'>
+        <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4 }}
+            className='overflow-hidden group text-sm border border-zinc-200 rounded-lg'
+        >
             <div className='bg-gradient-to-r from-zinc-200 via-zinc-300 to-zinc-200 overflow-hidden relative'>
                 {products.images && <Link href={pathname.startsWith('/admin') ? `/admin/product/${products.slug}` : `/product/${products.slug}`} className='w-full h-full flex items-center justify-center'>
                     <Image src={new URL(products.images[0].imageUrl).href} width={500} height={500} alt='product' className={`w-full h-72 object-cover overflow-hidden  hoverEffect ${parseInt(products.stock) !== 0 && 'group-hover:scale-105'}`} />
@@ -32,7 +38,7 @@ const ProductsCard = ({ products }: productsCardProps) => {
                     {pathname.startsWith('/admin') ? <DeleteProductsButton /> : <div>Add to cart</div>}
                 </div>
             </div>
-        </div>
+        </motion.div>
     )
 }
 
