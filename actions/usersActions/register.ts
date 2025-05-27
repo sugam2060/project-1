@@ -13,18 +13,20 @@ const StageMail = async (email: string) => {
   const link = `${process.env.NEXTAPP_URI}/verify?token=${verToken.token}`
   const emailHTML = getVerificationEmailHTML(link)
   await sendMail({ to: email, subject: 'Verify your email', html: emailHTML })
-  return { success:'Confirmation email sent!' }
+  return { success: 'Confirmation email sent!' }
 }
 
 export const registerNewUser = async (values: z.infer<typeof registerSchema>) => {
   const validated = registerSchema.safeParse(values)
-  if (!validated.success) return { error:'Invalid Fields' }
+  if (!validated.success) return { error: 'Invalid Fields' }
 
   const { name, email, password, private_key } = validated.data
   const hashed = await bcrypt.hash(password, 10)
 
-  const existingUser = await db.user.findUnique({ where: { email } })
-  const key = await db.adminBuffer.findFirst({ where: { email } })
+  const existingUserPromise = db.user.findUnique({ where: { email } })
+  const keyPromise = db.adminBuffer.findFirst({ where: { email } })
+
+  const [existingUser, key] = await Promise.all([existingUserPromise, keyPromise])
 
   if (existingUser) {
     if (existingUser.role === 'ADMIN') {
@@ -37,12 +39,20 @@ export const registerNewUser = async (values: z.infer<typeof registerSchema>) =>
     } else {
       if (key?.private_key !== private_key) return { error: 'Invalid Private Key' }
 
-      await db.user.update({
-        where: { email },
-        data: { name, password: hashed, role: 'ADMIN' }
+      setImmediate(() => {
+        db.user.update({
+          where: { email },
+          data: { name, password: hashed, role: 'ADMIN' }
+        }).catch((error => {
+          console.error('Error updating user:', error)
+        }))
       })
 
-      await db.adminBuffer.delete({ where: { email, private_key } })
+      setImmediate(() => {
+        db.adminBuffer.delete({ where: { email, private_key } }).catch((error => {
+          console.error('Error deleting admin buffer:', error)
+        }))
+      })
 
       const message = await StageMail(email)
       return message
