@@ -7,7 +7,6 @@ import Image from 'next/image'
 import PriceView from './PriceView'
 import { usePathname } from 'next/navigation'
 import DeleteProductsButton from './DeleteProductsButton'
-import { Divide } from 'lucide-react'
 
 interface productsCardProps {
     products: z.infer<typeof ProductFieldFetchsSchema>
