@@ -1,5 +1,5 @@
 'use client'
-import React, { Suspense, useTransition } from 'react'
+import React, { useTransition } from 'react'
 import { useForm } from 'react-hook-form'
 import { ProductFieldsSchema } from '@/schemas/ProductUploadSchema'
 import { z } from 'zod'
@@ -7,7 +7,6 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { CardContent, CardFooter } from '../ui/card'
 import { Input } from '../ui/input'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Button } from '../ui/button'
 import { generateSlug } from '@/lib/generateSlug'
 import { uploadProductsRemote } from '@/actions/productActions/uploadProducts'
@@ -38,6 +37,7 @@ const ProductUpload = () => {
 
     const onSubmit = (data: z.infer<typeof ProductFieldsSchema>) => {
         setFormError('')
+        console.log(data)
         setFormSuccess('')
         setTransition(() => {
             uploadProductsRemote(data).then((res) => {
@@ -106,34 +106,7 @@ const ProductUpload = () => {
                             </FormItem>
                         )}
                     />
-                    <FormField
-                        control={form.control}
-                        name="category"
-                        render={({ field }) => (
-                            <FormItem>
-                                <FormLabel>Category</FormLabel>
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger disabled={isPending} asChild>
-                                        <FormControl>
-                                            <button
-                                                type="button"
-                                                className="w-full rounded border px-3 py-2 text-left font-semibold"
-                                            >
-                                                {field.value || 'Select category'}
-                                            </button>
-                                        </FormControl>
-
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent className="w-[220px] p-2">
-                                        <Suspense fallback={<div>Loading...</div>}>
-                                            <ProductCategory field={field}/>
-                                        </Suspense>
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
-                                <FormMessage />
-                            </FormItem>
-                        )}
-                    />
+                    <ProductCategory form={form} isPending={isPending} />
                     <FormField control={form.control}
                         name='slug'
                         render={({ field }) => (
@@ -141,7 +114,7 @@ const ProductUpload = () => {
                                 <FormLabel>Slug</FormLabel>
                                 <div className='flex items-center gap-2'>
                                     <FormControl>
-                                        <Input disabled={isPending} placeholder='auto-generated-slug' readOnly {...field} className='font-semibold' /> 
+                                        <Input disabled={isPending} placeholder='auto-generated-slug' readOnly {...field} className='font-semibold' />
                                     </FormControl>
                                     <Button type='button' className='bg-gray-300 text-black px-1 hover:bg-gray-400 cursor-pointer' onClick={() => slugGenerator()}>Generate</Button>
                                 </div>
