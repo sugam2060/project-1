@@ -1,5 +1,5 @@
 'use client'
-import React, { useTransition } from 'react'
+import React, { Suspense, useTransition } from 'react'
 import { useForm } from 'react-hook-form'
 import { ProductFieldsSchema } from '@/schemas/ProductUploadSchema'
 import { z } from 'zod'
@@ -8,26 +8,18 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { CardContent, CardFooter } from '../ui/card'
 import { Input } from '../ui/input'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
-import { Label } from '../ui/label'
-import { RadioGroup, RadioGroupItem } from '../ui/radio-group'
 import { Button } from '../ui/button'
 import { generateSlug } from '@/lib/generateSlug'
 import { uploadProductsRemote } from '@/actions/productActions/uploadProducts'
 import { Loader2 } from 'lucide-react'
+import ProductCategory from './ProductCategory'
 
-interface ProductUploadProps {
-    categories: Array<{ category: string}>
-}
 
-const cat = ['bed','chair','sofa','wardrow', 'dining set', 'table']
 
-const ProductUpload = ({categories}:ProductUploadProps) => {
+const ProductUpload = () => {
     const [formSuccess, setFormSuccess] = React.useState<string>('')
     const [formError, setFormError] = React.useState<string>('')
     const [isPending, setTransition] = useTransition()
-    console.log(categories)
-
-
 
     const form = useForm<z.infer<typeof ProductFieldsSchema>>({
         resolver: zodResolver(ProductFieldsSchema),
@@ -133,20 +125,9 @@ const ProductUpload = ({categories}:ProductUploadProps) => {
 
                                     </DropdownMenuTrigger>
                                     <DropdownMenuContent className="w-[220px] p-2">
-                                        <RadioGroup
-                                            value={field.value}
-                                            onValueChange={field.onChange}
-                                            className="space-y-2"
-                                        >
-                                            {cat.map((item, idx) => (
-                                                <div key={idx} className="flex items-center space-x-2">
-                                                    <RadioGroupItem value={item} id={item} />
-                                                    <Label htmlFor={item} className="capitalize">
-                                                        {item}
-                                                    </Label>
-                                                </div>
-                                            ))}
-                                        </RadioGroup>
+                                        <Suspense fallback={<div>Loading...</div>}>
+                                            <ProductCategory field={field}/>
+                                        </Suspense>
                                     </DropdownMenuContent>
                                 </DropdownMenu>
                                 <FormMessage />
@@ -160,7 +141,7 @@ const ProductUpload = ({categories}:ProductUploadProps) => {
                                 <FormLabel>Slug</FormLabel>
                                 <div className='flex items-center gap-2'>
                                     <FormControl>
-                                        <Input disabled={isPending} placeholder='generate slug' readOnly  {...field} className='font-semibold' />
+                                        <Input disabled={isPending} placeholder='auto-generated-slug' readOnly {...field} className='font-semibold' /> 
                                     </FormControl>
                                     <Button type='button' className='bg-gray-300 text-black px-1 hover:bg-gray-400 cursor-pointer' onClick={() => slugGenerator()}>Generate</Button>
                                 </div>

@@ -88,3 +88,8 @@ model ProductImage {
 
   @@index([productId])
 }
+
+model categories {
+  id   String   @id @default(cuid())
+  title String
+}

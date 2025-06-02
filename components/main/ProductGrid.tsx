@@ -10,22 +10,23 @@ import { fetchByCategory } from '@/actions/productActions/FetchByCategory'
 import ProductFilter from './ProductFilter'
 import { useInView } from 'react-intersection-observer'
 import { Loader2 } from 'lucide-react'
+import { fetchCategories } from '@/actions/productActions/LoadCategories'
 
 type productType = z.infer<typeof ProductFieldFetchsSchema>
 
 interface ProductGridProps {
   className?: string;
   number?: number;
-  categories: Array<{ category: string }>;
 }
 
-const ProductGrid = ({ className, number, categories }: ProductGridProps) => {
+const ProductGrid = ({ className, number}: ProductGridProps) => {
   const [allProducts, setAllProducts] = useState<productType[]>([]);
   const [totalPage, setTotalPage] = useState(1);
   const [categoryFilter, setCategoryFilter] = useState('All');
   const [isLoading, setIsLoading] = useState(false);
   const [pageLoaded, setPageLoaded] = useState(1);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [categories,setCategories] = useState<Array<{ category: string }>>([])
   
   const { ref, inView } = useInView()
 
@@ -37,12 +38,16 @@ const ProductGrid = ({ className, number, categories }: ProductGridProps) => {
       setPageLoaded(1);
       
       try {
-        const { products, totalPage } = categoryFilter !== 'All' 
-          ? await fetchByCategory({ number: number as number, page: 1, category: categoryFilter }) 
-          : await fetchProducts({ number: number as number, page: 1 });
-        
+        const productsPromise = categoryFilter !== 'All' 
+          ? fetchByCategory({ number: number as number, page: 1, category: categoryFilter }) 
+          : fetchProducts({ number: number as number, page: 1 });
+        const categoryPromise = fetchCategories();
+
+        const [{products, totalPage}, categories] = await Promise.all([productsPromise, categoryPromise]);
+
         setAllProducts(products || []);
         setTotalPage(totalPage || 0);
+        setCategories(categories || []);
       } catch (error) {
         console.error('Error fetching products:', error);
         setAllProducts([]);
@@ -102,7 +107,7 @@ const ProductGrid = ({ className, number, categories }: ProductGridProps) => {
 
   return (
     <div className='mb-3'>
-      <div className='flex gap-5 mb-4'>
+      <div className='flex gap-5 mb-4 h-[48px]'>
         <ProductFilter 
           categories={categories} 
           categoryFilter={categoryFilter} 

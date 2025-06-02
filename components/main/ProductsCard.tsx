@@ -20,7 +20,7 @@ const ProductsCard = ({ product }: productsCardProps) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="overflow-hidden group text-sm border border-zinc-200 rounded-lg bg-white"
+      className="overflow-hidden group min-h-[250px] text-sm border border-zinc-200 rounded-lg bg-white"
     >
       <div className="bg-gradient-to-r from-zinc-200 via-zinc-300 to-zinc-200 overflow-hidden relative">
         {product.images && (
@@ -40,7 +40,7 @@ const ProductsCard = ({ product }: productsCardProps) => {
               width={500}
               height={500}
               alt="product"
-              className={`w-full h-48 sm:h-60 md:h-72 object-cover transition-transform duration-300 ${product.stock !== 0 && "group-hover:scale-105"
+              className={`w-full aspect-square object-cover transition-transform duration-300 ${product.stock !== 0 && "group-hover:scale-105"
                 }`}
             />
           </Link>
