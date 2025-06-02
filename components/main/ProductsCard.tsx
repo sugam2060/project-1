@@ -8,6 +8,7 @@ import PriceView from './PriceView'
 import { usePathname } from 'next/navigation'
 import DeleteProductsButton from './DeleteProductsButton'
 import { motion } from 'motion/react'
+import AddToCartButton from '../RootOnly/AddToCartButton'
 
 interface productsCardProps {
   product: z.infer<typeof ProductFieldFetchsSchema>
@@ -66,9 +67,7 @@ const ProductsCard = ({ product }: productsCardProps) => {
         {pathname.startsWith("/admin") ? (
           <DeleteProductsButton product={product} />
         ) : (
-          <div className="text-sm font-medium text-center text-blue-600 hover:underline cursor-pointer">
-            Add to cart
-          </div>
+          <AddToCartButton product={product}/>
         )}
       </div>
     </motion.div>
