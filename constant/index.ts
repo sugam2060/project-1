@@ -9,7 +9,7 @@ export const rootHeaderData = [
     },
     {
         title:'Product',
-        href:'/product'
+        href:'/products'
     },
     {
         title:'Interior',

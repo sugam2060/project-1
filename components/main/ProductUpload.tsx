@@ -2,7 +2,7 @@
 import React, { useTransition } from 'react'
 import { useForm } from 'react-hook-form'
 import { ProductFieldsSchema } from '@/schemas/ProductUploadSchema'
-import {  z } from 'zod'
+import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form'
 import { CardContent, CardFooter } from '../ui/card'
@@ -13,13 +13,15 @@ import { RadioGroup, RadioGroupItem } from '../ui/radio-group'
 import { catogoriesData } from '@/constant/index'
 import { Button } from '../ui/button'
 import { generateSlug } from '@/lib/generateSlug'
-import { uploadProducts } from '@/actions/productActions/uploadProducts'
+import { uploadProductsRemote } from '@/actions/productActions/uploadProducts'
 import { Loader2 } from 'lucide-react'
 
 const ProductUpload = () => {
     const [formSuccess, setFormSuccess] = React.useState<string>('')
     const [formError, setFormError] = React.useState<string>('')
     const [isPending, setTransition] = useTransition()
+
+
 
     const form = useForm<z.infer<typeof ProductFieldsSchema>>({
         resolver: zodResolver(ProductFieldsSchema),
@@ -31,7 +33,7 @@ const ProductUpload = () => {
             image: [],
             slug: '',
             stock: '1',
-            discount:'0',
+            discount: '0',
             brand: 'Kalika kasta furniture udyog',
         },
     })
@@ -40,7 +42,7 @@ const ProductUpload = () => {
         setFormError('')
         setFormSuccess('')
         setTransition(() => {
-            uploadProducts(data).then((res) => {
+            uploadProductsRemote(data).then((res) => {
                 setFormError(res?.error || '')
                 setFormSuccess(res?.success || '')
             })
@@ -98,7 +100,7 @@ const ProductUpload = () => {
                         name='discount'
                         render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Discount</FormLabel>    
+                                <FormLabel>Discount</FormLabel>
                                 <FormControl>
                                     <Input min={0} disabled={isPending} type='number' {...field} className='font-semibold' />
                                 </FormControl>
@@ -220,7 +222,7 @@ const ProductUpload = () => {
                 <CardFooter>
                     <Button disabled={isPending} type="submit" className="w-full cursor-pointer my-2 relative">
                         Upload Product
-                        {isPending && <Loader2  className='absolute right-8 top-1/2 -translate-x-1/2 -translate-y-1/2 animate-spin'/>}
+                        {isPending && <Loader2 className='absolute right-8 top-1/2 -translate-x-1/2 -translate-y-1/2 animate-spin' />}
                     </Button>
                 </CardFooter>
             </form>

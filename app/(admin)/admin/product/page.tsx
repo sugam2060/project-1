@@ -20,12 +20,12 @@ const AdminProductsPage = () => {
           <Suspense
             fallback={
               <ProductLoadingSkeleton
-                length={6}
+                length={9}
                 className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
               />
             }
           >
-            <ProductGrid number={6} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 justify-center gap-3" />
+            <ProductGrid number={9} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 justify-center gap-3" />
           </Suspense>
         </div>
       </div>

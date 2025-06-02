@@ -1,11 +1,14 @@
-import React from 'react'
+// import ProductDetails from '@/components/main/ProductDetails'
+// import Container from '@/components/main/Container'
+// import React from 'react'
 
-const ProductDetails = async ({params}:{params:Promise<{slug:string}>}) => {
-  const {slug} = await params
+// const ProductDetailPage = async ({params}:{params:Promise<{slug:string}>}) => {
+//   const {slug} = await params
+
   
-  return (
-    <div>{slug}</div>
-  )
-}
+//   return (
+//         <ProductDetails slug={slug}/>
+//   )
+// }
 
-export default ProductDetails
+// export default ProductDetailPage

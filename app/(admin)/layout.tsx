@@ -7,7 +7,9 @@ const AdminLayout = ({ children }: { children: React.ReactNode }) => {
         <main>
             <AdminHeader />
             {children}
-            <Footer />
+            <div className='footer-sentinel'>
+                <Footer />
+            </div>
         </main>
     )
 }
