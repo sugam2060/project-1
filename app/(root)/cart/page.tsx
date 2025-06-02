@@ -2,7 +2,6 @@
 import Container from "@/components/main/Container";
 import EmptyCart from "@/components/RootOnly/EmptyCart";
 import Loading from "@/components/main/Loading";
-import NoAccessToCart from "@/components/RootOnly/NoAccessToCart";
 import PriceFormatter from "@/components/main/PriceFormater";
 import QuantityButtons from "@/components/RootOnly/QuantityButtons";
 import { Button } from "@/components/ui/button";
