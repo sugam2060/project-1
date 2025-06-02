@@ -172,6 +172,10 @@
   }
 }
 
+@theme {
+  --breakpoint-3xl: 1800px  
+}
+
 /* styles/globals.css or wherever your Tailwind base styles are */
 
 .custom-scroll::-webkit-scrollbar {
