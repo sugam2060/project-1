@@ -16,7 +16,7 @@ import { rootHeaderData } from '@/constant';
 const Header = async () => {
   const session = await auth()
   return (
-    <div className="bg-gray-200 h-20 border-b border-b-gray-200 sticky top-0 z-50">
+    <div className="bg-gray-50 h-20 border-b border-b-gray-200 sticky top-0 z-50">
       <Container className="h-full flex items-center justify-between pr-5">
         <div className='flex items-center gap-2 h-full'>
           <MobileMenu HeaderData={rootHeaderData}/>

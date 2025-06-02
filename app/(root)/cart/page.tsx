@@ -24,10 +24,6 @@ import paypalLogo from "@/images/paypalLogo.png";
 import { useSession } from "next-auth/react";
 import { Metadata } from "@/schemas/cartSchema";
 import { createCheckoutSession } from "@/actions/productActions/createCheckoutSession";
-// import {
-//   createCheckoutSession,
-//   Metadata,
-// } from "@/actions/createCheckoutSession";
 
 const CartPage = () => {
   const router = useRouter();
@@ -89,7 +85,7 @@ const CartPage = () => {
 
   return (
     <div className="bg-gray-50 pb-52 md:pb-10">
-      {isSignedIn ? (
+      {isSignedIn && (
         <Container>
           {cartProducts?.length ? (
             <>
@@ -278,8 +274,6 @@ const CartPage = () => {
             <EmptyCart />
           )}
         </Container>
-      ) : (
-        <NoAccessToCart />
       )}
     </div>
   );
