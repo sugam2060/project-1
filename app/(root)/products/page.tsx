@@ -1,4 +1,3 @@
-import { fetchCategories } from '@/actions/productActions/LoadCategories'
 import Container from '@/components/main/Container'
 import ProductGrid from '@/components/main/ProductGrid'
 import ProductLoadingSkeleton from '@/components/main/ProductLoadingSkeleton'
