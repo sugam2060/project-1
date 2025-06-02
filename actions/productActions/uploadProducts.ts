@@ -48,6 +48,7 @@ export const uploadProductsRemote = async (products: z.infer<typeof ProductField
                         }
                     ).end(buffer)
                 })
+                revalidatePath('/admin/product')
                 imageUrls.push(result.secure_url)
             } catch (error) {
                 console.error("Cloudinary upload error:", error);

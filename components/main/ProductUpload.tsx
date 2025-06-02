@@ -10,16 +10,22 @@ import { Input } from '../ui/input'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Label } from '../ui/label'
 import { RadioGroup, RadioGroupItem } from '../ui/radio-group'
-import { catogoriesData } from '@/constant/index'
 import { Button } from '../ui/button'
 import { generateSlug } from '@/lib/generateSlug'
 import { uploadProductsRemote } from '@/actions/productActions/uploadProducts'
 import { Loader2 } from 'lucide-react'
 
-const ProductUpload = () => {
+interface ProductUploadProps {
+    categories: Array<{ category: string}>
+}
+
+const cat = ['bed','chair','sofa','wardrow', 'dining set', 'table']
+
+const ProductUpload = ({categories}:ProductUploadProps) => {
     const [formSuccess, setFormSuccess] = React.useState<string>('')
     const [formError, setFormError] = React.useState<string>('')
     const [isPending, setTransition] = useTransition()
+    console.log(categories)
 
 
 
@@ -132,11 +138,11 @@ const ProductUpload = () => {
                                             onValueChange={field.onChange}
                                             className="space-y-2"
                                         >
-                                            {catogoriesData.map((item, idx) => (
+                                            {cat.map((item, idx) => (
                                                 <div key={idx} className="flex items-center space-x-2">
-                                                    <RadioGroupItem value={item.title} id={item.title} />
-                                                    <Label htmlFor={item.title} className="capitalize">
-                                                        {item.title}
+                                                    <RadioGroupItem value={item} id={item} />
+                                                    <Label htmlFor={item} className="capitalize">
+                                                        {item}
                                                     </Label>
                                                 </div>
                                             ))}

@@ -1,17 +1,20 @@
+import { fetchCategories } from '@/actions/productActions/LoadCategories'
 import Container from '@/components/main/Container'
 import ProductGrid from '@/components/main/ProductGrid'
 import ProductLoadingSkeleton from '@/components/main/ProductLoadingSkeleton'
 import ProductUpload from '@/components/main/ProductUpload'
 import React, { Suspense } from 'react'
 
-const AdminProductsPage = () => {
+const AdminProductsPage = async () => {
+  const categories = await fetchCategories();
+  console.log(categories)
   return (
     <Container className="">
       <div className="min-h-screen grid grid-rows-[auto_auto] md:grid-cols-[1fr_2fr] lg:grid-cols-[1fr_3fr] gap-4">
         {/* Upload Section */}
         <div className="bg-gray-100 pt-6 px-4 max-h-screen overflow-y-auto custom-scroll">
           <h2 className='text-center font-semibold text-lg md:text-xl lg:text-2xl mb-6'>Upload Product</h2>
-          <ProductUpload />
+          <ProductUpload categories={categories as Array<{category:string}>} />
         </div>
 
         {/* Product Grid Section */}
@@ -25,7 +28,7 @@ const AdminProductsPage = () => {
               />
             }
           >
-            <ProductGrid number={9} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 justify-center gap-3" />
+            <ProductGrid number={9} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 justify-center gap-3" categories={categories as Array<{category:string}>} />
           </Suspense>
         </div>
       </div>
