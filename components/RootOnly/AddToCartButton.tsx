@@ -49,7 +49,7 @@ const AddToCartButton = ({ product, className }: Props) => {
             className
           )}
         >
-          Add to cart
+          Add For Enquiry
         </Button>
       )}
     </div>

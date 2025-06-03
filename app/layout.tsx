@@ -7,6 +7,7 @@ const RalewayFont = Raleway({
   variable: "--font-raleway",
   weight: "400",
   display: "swap", // <- helps avoid FOIT (flash of invisible text)
+  subsets: ["latin"],
 });
 
 

@@ -21,7 +21,7 @@ const ProductsCard = ({ product }: productsCardProps) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="overflow-hidden group min-h-[250px] text-sm border border-zinc-200 rounded-lg bg-white"
+      className="overflow-hidden group min-h-[250px] text-sm border border-zinc-200 rounded-lg bg-white shadow-sm"
     >
       <div className="bg-gradient-to-r from-zinc-200 via-zinc-300 to-zinc-200 overflow-hidden relative">
         {product.images && (

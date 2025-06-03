@@ -107,7 +107,7 @@ const ProductGrid = ({ className, number}: ProductGridProps) => {
 
   return (
     <div className='mb-3'>
-      <div className='flex gap-5 mb-4 h-[48px]'>
+      <div className='flex gap-5 mb-1 h-[48px]'>
         <ProductFilter 
           categories={categories} 
           categoryFilter={categoryFilter} 
