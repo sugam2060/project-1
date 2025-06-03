@@ -6,7 +6,12 @@ import { signIn } from 'next-auth/react'
 import { FcGoogle } from "react-icons/fc"
 import EmailLogin from '@/components/main/EmailLogin'
 import Container from '@/components/main/Container'
+import { Metadata } from 'next'
 
+export const metadata: Metadata = {
+  title: "Login",
+  description: "Securely log in to your Kalika Kasta Furniture Udyog account to view orders, manage your cart, and explore our latest wooden furniture collections online."
+};
 
 
 const LoginPage = () => {
