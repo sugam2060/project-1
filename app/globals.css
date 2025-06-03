@@ -8,6 +8,11 @@
   -webkit-text-fill-color: transparent;
 }
 
+body {
+  font-family: var(--font-raleway), sans-serif;
+}
+
+
 :root {
   color-scheme: dark;
   --radius: 0.625rem;
