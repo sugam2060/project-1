@@ -1,6 +1,6 @@
 'use client'
 
-import { fetchCategories } from '@/actions/productActions/LoadCategories'
+import { fetchCategories } from '@/actions/productActions/FetchCategories'
 import React, { useEffect, useState } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
