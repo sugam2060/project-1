@@ -78,6 +78,12 @@ model Product {
   discount    Int @default(0)
   slug        String @unique
   images      ProductImage[] // one product has many images
+
+  // Composite indexes for optimized queries
+  @@index([name, id]) // For name-based ordering with cursor
+  @@index([category, name, id]) // For category filtering with name ordering
+  @@index([category]) // For category filtering
+  @@index([price]) // If you plan to sort by price
 }
 
 model ProductImage {
@@ -86,7 +92,7 @@ model ProductImage {
   imageUrl  String
   product   Product  @relation(fields: [productId], references: [id])
 
-  @@index([productId])
+  @@index([productId]) // Already exists
 }
 
 model categories {

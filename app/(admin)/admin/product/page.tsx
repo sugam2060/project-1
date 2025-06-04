@@ -1,8 +1,7 @@
 import Container from '@/components/main/Container'
 import ProductGrid from '@/components/main/ProductGrid'
-import ProductLoadingSkeleton from '@/components/main/ProductLoadingSkeleton'
 import ProductUpload from '@/components/main/ProductUpload'
-import React, { Suspense } from 'react'
+import React from 'react'
 
 const AdminProductsPage = async () => {
   return (
@@ -16,16 +15,7 @@ const AdminProductsPage = async () => {
         {/* Product Grid Section */}
         <div className="pt-6 px-4 bg-gray-100">
           <h2 className='text-center font-semibold text-lg md:text-xl lg:text-2xl mb-6'>Products</h2>
-          <Suspense
-            fallback={
-              <ProductLoadingSkeleton
-                length={9}
-                className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 min-h-[600px]" // Reserve vertical space
-              />
-            }
-          >
-            <ProductGrid number={9} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 justify-center gap-3" />
-          </Suspense>
+          <ProductGrid limit={9} className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3 justify-center gap-3" />
         </div>
       </div>
     </Container>
