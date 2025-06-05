@@ -8,6 +8,8 @@ export const metadata: Metadata = {
   description: "Browse our wide range of handcrafted wooden furniture at Kalika Kasta Furniture Udyog. From elegant sofas to sturdy beds and stylish dining sets, find the perfect piece for your home or office. Add your favorite items to the cart and shop with ease from Dhangadhi, Nepal."
 };
 
+export const revalidate = 60 * 60 * 6 // 6 hours
+
 
 const MainProductPage = async () => {
   return (

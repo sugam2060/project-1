@@ -19,7 +19,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-import paypalLogo from "@/images/paypalLogo.png";
 import { useSession } from "next-auth/react";
 import { createCheckoutSession } from "@/actions/productActions/createCheckoutSession";
 
@@ -373,16 +372,6 @@ const CartComponent = () => {
                     >
                       {loading ? "Processing..." : "Proceed to Checkout"}
                     </Button>
-                    <Link
-                      href={"/"}
-                      className="flex items-center justify-center py-2 border border-gray-300 rounded-full hover:border-gray-400 hover:bg-gray-50 hoverEffect mt-2"
-                    >
-                      <Image
-                        src={paypalLogo}
-                        alt="paypalLogo"
-                        className="w-16 h-auto"
-                      />
-                    </Link>
                   </div>
                 </div>
               </div>

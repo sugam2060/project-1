@@ -13,6 +13,8 @@ import { Loader2, SlidersHorizontal } from 'lucide-react'
 import { fetchCategories } from '@/actions/productActions/FetchCategories'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import { v4 as uuidv4 } from 'uuid'
+
 
 type productType = z.infer<typeof ProductFieldFetchsSchema>
 
@@ -40,7 +42,7 @@ const ProductGrid = ({ className, limit }: ProductGridProps) => {
   const skipNextFetch = useRef(false); // 👈 Fix flickering
 
   const { ref, inView } = useInView({
-    threshold: 0.1,
+    threshold: 1.0,
     rootMargin: '100px',
   });
 
@@ -237,7 +239,7 @@ const ProductGrid = ({ className, limit }: ProductGridProps) => {
           <div className={cn("mx-2 mb-3", className)}>
             {safeProducts.length > 0 ? (
               safeProducts.map((product) => (
-                <ProductsCard key={product.id} product={product} />
+                <ProductsCard key={`${product.id}${uuidv4()}`} product={product} />
               ))
             ) : (
               <div className="text-center py-12">

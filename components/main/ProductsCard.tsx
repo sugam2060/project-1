@@ -9,19 +9,21 @@ import { usePathname } from 'next/navigation'
 import DeleteProductsButton from './DeleteProductsButton'
 import { motion } from 'motion/react'
 import AddToCartButton from '../RootOnly/AddToCartButton'
+import { cn } from '@/lib/utils'
 
 interface productsCardProps {
-  product: z.infer<typeof ProductFieldFetchsSchema>
+  product: z.infer<typeof ProductFieldFetchsSchema>,
+  className?: string
 }
 
-const ProductsCard = ({ product }: productsCardProps) => {
+const ProductsCard = ({ product,className }: productsCardProps) => {
   const pathname = usePathname();
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="overflow-hidden group min-h-[250px] text-sm border border-zinc-200 rounded-lg bg-white shadow-sm"
+      className={cn("overflow-hidden group min-h-[250px] text-sm border border-zinc-200 rounded-lg bg-white shadow-sm",className)}
     >
       <div className="bg-gradient-to-r from-zinc-200 via-zinc-300 to-zinc-200 overflow-hidden relative">
         {product.images && (

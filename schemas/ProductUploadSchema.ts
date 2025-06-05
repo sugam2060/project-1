@@ -41,3 +41,4 @@ export const productUpdateSchema = z.object({
   brand: z.string().optional(),
 })
 
+

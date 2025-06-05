@@ -77,13 +77,14 @@ model Product {
   brand       String @default("Kalika kasta furniture udyog") 
   discount    Int @default(0)
   slug        String @unique
-  images      ProductImage[] // one product has many images
+  images      ProductImage[]
 
-  // Composite indexes for optimized queries
-  @@index([name, id]) // For name-based ordering with cursor
-  @@index([category, name, id]) // For category filtering with name ordering
-  @@index([category]) // For category filtering
-  @@index([price]) // If you plan to sort by price
+  trending    TrendingProduct?
+
+  @@index([name, id])
+  @@index([category, name, id])
+  @@index([category])
+  @@index([price])
 }
 
 model ProductImage {
@@ -92,8 +93,16 @@ model ProductImage {
   imageUrl  String
   product   Product  @relation(fields: [productId], references: [id])
 
-  @@index([productId]) // Already exists
+  @@index([productId])
 }
+
+model TrendingProduct {
+  id        String   @id @default(cuid())
+  productId String   @unique
+  addedAt   DateTime @default(now()) // optional: to track when it started trending
+  product   Product  @relation(fields: [productId], references: [id])
+}
+
 
 model categories {
   id   String   @id @default(cuid())

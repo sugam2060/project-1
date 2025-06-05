@@ -1,5 +1,6 @@
 'use server'
 import { db } from "@/lib/db";
+import { skip } from "node:test";
 
 interface PriceRange {
   min: number;
@@ -21,6 +22,7 @@ export const fetchProducts = async ({
   sortBy?: 'name' | 'price' | 'createdAt';
   sortOrder?: 'asc' | 'desc';
 }) => {
+  
   try {
     // Build where clause
     const whereClause: any = {};
@@ -58,10 +60,9 @@ export const fetchProducts = async ({
       where: whereClause,
       take: limit + 1,
       ...(cursor && {
-        cursor: {
-          id: cursor,
-        },
-        skip: 1,
+        cursor:{
+          id: cursor
+        }
       }),
       orderBy,
       select: {
