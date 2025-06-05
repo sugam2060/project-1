@@ -15,7 +15,7 @@ export default function RootPage() {
       <Container>
         <div className="mx-auto max-w-[90%] mt-10">
           <h1 className="font-bold text-3xl mb-5">Trending Products</h1>
-          <TrendingGrid limit={3} />
+          <TrendingGrid limit={8} />
         </div>
       </Container>
     </div>
