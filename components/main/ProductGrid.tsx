@@ -10,9 +10,9 @@ import CategoryFilter from './CategoryFilter'
 import PriceFilter from './PriceFilter'
 import { useInView } from 'react-intersection-observer'
 import { Loader2, SlidersHorizontal } from 'lucide-react'
-import { fetchCategories } from '@/actions/productActions/FetchCategories'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
+import useCategoriesStore from '@/store/categoryStore'
 
 
 type productType = z.infer<typeof ProductFieldFetchsSchema>
@@ -34,29 +34,17 @@ const ProductGrid = ({ className, limit }: ProductGridProps) => {
   const [availablePriceRange, setAvailablePriceRange] = useState<PriceRange>({ min: 0, max: 10000 });
   const [isLoading, setIsLoading] = useState(false);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [categories, setCategories] = useState<Array<{ category: string }>>([]);
   const [nextCursor, setNextCursor] = useState<string | null>(null);
   const [hasNextPage, setHasNextPage] = useState(false);
 
   const skipNextFetch = useRef(false); // 👈 Fix flickering
 
+  const categories = useCategoriesStore((state) => state.categories)
+
   const { ref, inView } = useInView({
     threshold: 1.0,
     rootMargin: '100px',
   });
-
-  useEffect(() => {
-    const loadCategories = async () => {
-      try {
-        const categoriesResult = await fetchCategories();
-        setCategories(categoriesResult || []);
-      } catch (error) {
-        console.error('Error fetching categories:', error);
-      }
-    };
-
-    loadCategories();
-  }, []);
 
   useEffect(() => {
     const fetchAvailablePriceRange = async () => {

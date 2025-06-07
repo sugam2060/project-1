@@ -1,6 +1,6 @@
 "use server";
 import { Metadata } from "@/schemas/cartSchema";
-import { CartItem } from "@/store";
+import { CartItem } from "@/store/store";
 
 
 

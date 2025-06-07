@@ -6,7 +6,8 @@ export const fetchCategories = async () => {
         const categories = await db.product.findMany({
             distinct: ['category'],
             select: {
-                category: true
+                category: true,
+                slug:true
             }
         })
         return categories

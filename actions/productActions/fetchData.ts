@@ -1,13 +1,13 @@
 'use server'
 import { db } from "@/lib/db";
-import { skip } from "node:test";
+import { unstable_cache } from 'next/cache'
 
 interface PriceRange {
   min: number;
   max: number;
 }
 
-export const fetchProducts = async ({
+export const fetchProducts = unstable_cache(async ({
   limit,
   cursor,
   selectedCategories = [],
@@ -22,18 +22,18 @@ export const fetchProducts = async ({
   sortBy?: 'name' | 'price' | 'createdAt';
   sortOrder?: 'asc' | 'desc';
 }) => {
-  
+
   try {
     // Build where clause
     const whereClause: any = {};
-    
+
     // Multiple categories filter
     if (selectedCategories.length > 0) {
       whereClause.category = {
         in: selectedCategories
       };
     }
-    
+
     // Price range filter
     if (priceRange) {
       whereClause.price = {
@@ -44,7 +44,7 @@ export const fetchProducts = async ({
 
     // Build orderBy clause
     const orderBy: any[] = [];
-    
+
     if (sortBy === 'name') {
       orderBy.push({ name: sortOrder });
       orderBy.push({ id: 'asc' }); // Secondary sort for consistency
@@ -60,7 +60,7 @@ export const fetchProducts = async ({
       where: whereClause,
       take: limit + 1,
       ...(cursor && {
-        cursor:{
+        cursor: {
           id: cursor
         }
       }),
@@ -101,13 +101,19 @@ export const fetchProducts = async ({
     console.error("Error fetching products:", error);
     throw new Error("Failed to fetch products");
   }
-};
+},
+  ['fetch-products'],
+  {
+    tags: ['products'],
+    revalidate: 60 * 60, // Revalidate every hour
+  }
+)
 
 // Helper function to get price range for selected categories
-export const getPriceRange = async (selectedCategories?: string[]) => {
+export const getPriceRange = unstable_cache(async (selectedCategories?: string[]) => {
   try {
     const whereClause: any = {};
-    
+
     if (selectedCategories && selectedCategories.length > 0) {
       whereClause.category = {
         in: selectedCategories
@@ -135,4 +141,10 @@ export const getPriceRange = async (selectedCategories?: string[]) => {
       max: 10000,
     };
   }
-};
+},
+['get-price-range'],
+{
+  tags:['price-range'],
+  revalidate: 60 * 60, // Revalidate every hour
+}
+);

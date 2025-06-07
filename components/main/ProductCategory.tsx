@@ -1,7 +1,6 @@
 'use client'
 
-import { fetchCategories } from '@/actions/productActions/FetchCategories'
-import React, { useEffect, useState } from 'react'
+import React from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 import { ProductFieldsSchema } from '@/schemas/ProductUploadSchema'
@@ -20,6 +19,7 @@ import {
   SelectValue
 } from '../ui/select'
 import { ScrollArea } from '../ui/scroll-area'
+import useCategoriesStore from '@/store/categoryStore'
 
 type productUploadType = z.infer<typeof ProductFieldsSchema>
 
@@ -29,15 +29,8 @@ interface Props {
 }
 
 const ProductCategory = ({ form, isPending }: Props) => {
-  const [categories, setCategories] = useState<Array<{ category: string }>>([])
+  const categories = useCategoriesStore((state) => state.categories)
 
-  useEffect(() => {
-    const fetchCat = async () => {
-      const cat = await fetchCategories()
-      if (cat) setCategories(cat)
-    }
-    fetchCat()
-  }, [])
 
   return (
     <FormField

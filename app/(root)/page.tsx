@@ -14,7 +14,7 @@ export default function RootPage() {
       {/* Trending section */}
       <Container>
         <div className="mx-auto max-w-[90%] mt-10">
-          <h1 className="font-bold text-3xl mb-5">Trending Products</h1>
+          <h1 className="font-bold text-3xl mb-5 text-center md:text-left">Trending Products</h1>
           <TrendingGrid limit={8} />
         </div>
       </Container>

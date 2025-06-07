@@ -1,5 +1,5 @@
 'use client'
-import useCartStore from '@/store'
+import useCartStore from '@/store/store'
 import { ShoppingBag} from 'lucide-react'
 import Link from 'next/link'
 import React from 'react'

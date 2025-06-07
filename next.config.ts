@@ -16,7 +16,8 @@ const nextConfig: NextConfig = {
         staleTimes:{
             dynamic: 60 * 60 * 24, // 1 day
             static: 60 * 60 * 24, // 1 day
-        }
+        },
+        // dynamicIO: true,
     }
 };
 

@@ -13,7 +13,7 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
-import useCartStore from "@/store";
+import useCartStore from "@/store/store";
 import { Heart, ShoppingBag, Trash } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";

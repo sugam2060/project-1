@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import QuantityButtons from "./QuantityButtons";
 import PriceFormatter from "@/components/main/PriceFormater";
-import useCartStore from "@/store";
+import useCartStore from "@/store/store";
 import z from "zod";
 
 type Product = z.infer<typeof ProductFieldFetchsSchema>;
