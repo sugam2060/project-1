@@ -40,9 +40,6 @@ const TrendingGrid: React.FC<TrendingGridProps> = ({ limit }) => {
                 sortBy: 'name',
                 sortOrder: 'asc',
             });
-
-            console.log('Response received:', response);
-
             if (response && response.items) {
                 if (nextCursor) {
                     // Subsequent pages - append
@@ -72,21 +69,9 @@ const TrendingGrid: React.FC<TrendingGridProps> = ({ limit }) => {
     // Infinite scroll trigger
     useEffect(() => {
         if (inView && isInitialized && !isLoading && hasNextPage) {
-            console.log('InView triggered, fetching more...');
             fetchMore();
         }
     }, [inView, fetchMore, isInitialized, isLoading, hasNextPage]);
-
-    // Debug logging
-    useEffect(() => {
-        console.log('State update:', {
-            productsCount: trendingProducts.length,
-            nextCursor,
-            hasNextPage,
-            isLoading,
-            isInitialized
-        });
-    }, [trendingProducts, nextCursor, hasNextPage, isLoading, isInitialized]);
 
     if (!isInitialized && isLoading) {
         return (

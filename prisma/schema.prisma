@@ -37,7 +37,7 @@ model adminBuffer {
 }
 
 model User {
-  id            String    @id @default(cuid())
+  id            String    @id @default(uuid())
   name          String
   email         String    @unique
   emailVerified DateTime?
@@ -49,7 +49,7 @@ model User {
 }
 
 model Account {
-  id                String  @id @default(cuid())
+  id                String  @id @default(uuid())
   userId            String
   type              String
   provider          String
@@ -68,7 +68,7 @@ model Account {
 }
 
 model Product {
-  id          String         @id @default(cuid())
+  id          String         @id @default(uuid())
   name        String
   price       Float
   description String
@@ -88,7 +88,7 @@ model Product {
 }
 
 model ProductImage {
-  id        String   @id @default(cuid())
+  id        String   @id @default(uuid())
   productId String
   imageUrl  String
   product   Product  @relation(fields: [productId], references: [id])
@@ -97,7 +97,7 @@ model ProductImage {
 }
 
 model TrendingProduct {
-  id        String   @id @default(cuid())
+  id        String   @id @default(uuid())
   productId String   @unique
   addedAt   DateTime @default(now()) // optional: to track when it started trending
   product   Product  @relation(fields: [productId], references: [id])
@@ -105,6 +105,6 @@ model TrendingProduct {
 
 
 model categories {
-  id   String   @id @default(cuid())
+  id   String   @id @default(uuid())
   title String
 }

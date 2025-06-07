@@ -7,7 +7,6 @@ import React, { useEffect } from 'react'
 const FooterCategories = () => {
     const categoriesData = useCategoriesStore((state) => state.categories)
     const setCategories = useCategoriesStore((state) => state.setCategories)
-    console.log(categoriesData)
 
     useEffect(() => {
         const loadCategories = async () => {
