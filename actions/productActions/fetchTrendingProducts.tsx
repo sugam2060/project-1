@@ -97,6 +97,6 @@ export const fetchTrendingProducts = unstable_cache(
 ['fetchTrendingProducts'],
 {
     tags: ['fetchTrendingProducts'],
-    revalidate: 60 * 60 // 1 hour
+    revalidate: 1 // 1 hour
 }
 )

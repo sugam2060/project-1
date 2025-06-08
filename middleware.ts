@@ -10,7 +10,7 @@ export default auth((req) => {
   const isLoggedIn = !!session
 
   const isApiAuthRoute = nextUrl.pathname.startsWith(apiAuthPrefix)
-  const isPublicRoutes = publicRoutes.includes(nextUrl.pathname)
+  const isPublicRoutes = publicRoutes.includes(nextUrl.pathname) || nextUrl.pathname.startsWith("/products/");
   const isAuthRoutes = authRoutes.includes(nextUrl.pathname)
   const isAdminOnlyRoutes = adminOnlyRoutes.includes(nextUrl.pathname)
   const isAdminPath = nextUrl.pathname.startsWith('/admin')

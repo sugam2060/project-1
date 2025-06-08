@@ -4,10 +4,6 @@ export const rootHeaderData = [
         href:'/'
     },
     {
-        title:'Category',
-        href:'/category'
-    },
-    {
         title:'Product',
         href:'/products'
     },
@@ -41,34 +37,6 @@ export const quickLinksData = [
     {
         title:'FAQs',
         href:"/faqs"
-    }
-]
-
-//categories will be dynamic
-export const catogoriesData = [
-    {
-        title:"Bed",
-        href:"/bed"
-    },
-    {
-        title:"wardrobe & draw",
-        href:"/wardrobe"
-    },
-    {
-        title:"sofa",
-        href:"/sofa"
-    },
-    {
-        title:"Chair",
-        href:"/chair"
-    },
-    {
-        title:"Table",
-        href:"/table"
-    },
-    {
-        title:"Others",
-        href:"/others"
     }
 ]
 

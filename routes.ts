@@ -4,7 +4,8 @@ export const publicRoutes = [
     '/about',
     '/contact',
     '/T&Q',
-    '/products'
+    '/products',
+    '/cart'
 ]
 
 // Routes that are used for authentication

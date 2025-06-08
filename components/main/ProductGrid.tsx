@@ -25,9 +25,10 @@ interface PriceRange {
 interface ProductGridProps {
   className?: string;
   limit?: number;
+  filter?:string
 }
 
-const ProductGrid = ({ className, limit }: ProductGridProps) => {
+const ProductGrid = ({ className, limit,filter }: ProductGridProps) => {
   const [allProducts, setAllProducts] = useState<productType[]>([]);
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState<PriceRange>({ min: 0, max: 10000 });
@@ -38,6 +39,15 @@ const ProductGrid = ({ className, limit }: ProductGridProps) => {
   const [hasNextPage, setHasNextPage] = useState(false);
 
   const skipNextFetch = useRef(false); // 👈 Fix flickering
+
+  useEffect(() => {
+  if (filter) {
+    setSelectedCategories([filter]);
+  } else {
+    setSelectedCategories([]);
+  }
+}, [filter]);
+
 
   const categories = useCategoriesStore((state) => state.categories)
 

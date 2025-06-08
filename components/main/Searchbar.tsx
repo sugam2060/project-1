@@ -50,7 +50,7 @@ const Searchbar = () => {
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
       fetchProducts()
-    }, 300)
+    }, 700)
     return () => {
       clearTimeout(debounceTimer)
     }

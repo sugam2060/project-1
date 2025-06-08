@@ -14,7 +14,7 @@ interface props {
 const HeaderMenu = ({HeaderData}: props) => {
   const pathname = usePathname()
   return (
-    <div className='hidden md:inline-flex w-1/3 items-center gap-5 text-sm capitalize font-semibold text-[#151515]/80'>
+    <div className='hidden md:inline-flex w-1/3 items-center gap-5 text-sm justify-center capitalize font-semibold text-[#151515]/80'>
       {HeaderData.map((item) =>( 
         <Link href={item.href} key={item.title} className={`hover:text-[#151515] hoverEffect relative group ${pathname === item.href && 'text-[#151515]'}`}>
             {item.title}

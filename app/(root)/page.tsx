@@ -1,6 +1,7 @@
 import Container from "@/components/main/Container";
 import HomeImageCarosel from "@/components/RootOnly/HomeImageCarosel";
 import TrendingGrid from "@/components/RootOnly/TrendingGrid";
+import Link from "next/link";
 
 
 export default function RootPage() {
@@ -14,8 +15,13 @@ export default function RootPage() {
       {/* Trending section */}
       <Container>
         <div className="mx-auto max-w-[90%] mt-10">
-          <h1 className="font-bold text-3xl mb-5 text-center md:text-left">Trending Products</h1>
+
           <TrendingGrid limit={8} />
+          <Link href={'/products?category=Table'}>
+            <div>
+              hello
+            </div>
+          </Link>
         </div>
       </Container>
     </div>
