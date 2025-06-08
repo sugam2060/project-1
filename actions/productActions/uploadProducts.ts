@@ -7,7 +7,7 @@ import { v5 as uuidv5 } from 'uuid'
 import path from "path";
 import { mkdir, writeFile } from "fs/promises";
 import { revalidatePath } from "next/cache";
-
+import { revalidateTag } from "next/cache";
 
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME!,
@@ -48,6 +48,9 @@ export const uploadProductsRemote = async (products: z.infer<typeof ProductField
                         }
                     ).end(buffer)
                 })
+                revalidateTag('products');
+                revalidateTag('price-range')
+                revalidateTag('fetchCategories')
                 revalidatePath('/admin/product')
                 imageUrls.push(result.secure_url)
             } catch (error) {

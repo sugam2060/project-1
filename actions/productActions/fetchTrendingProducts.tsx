@@ -1,6 +1,7 @@
 'use server'
 import { db } from "@/lib/db";
 import { TrendingProduct } from "@/schemas/TypeSchemas/TrendingSchema";
+import { unstable_cache } from "next/cache";
 
 interface Props {
     limit: number;
@@ -16,7 +17,8 @@ export type FetchTrendingProductsResult = {
     nextCursor: string | null;
 }
 
-export const fetchTrendingProducts = async ({
+export const fetchTrendingProducts = unstable_cache(
+    async ({
     limit = 8,
     cursor,
     sortBy = 'name',
@@ -91,4 +93,10 @@ export const fetchTrendingProducts = async ({
             hasNextPage: false
         };
     }
+},
+['fetchTrendingProducts'],
+{
+    tags: ['fetchTrendingProducts'],
+    revalidate: 60 * 60 // 1 hour
 }
+)

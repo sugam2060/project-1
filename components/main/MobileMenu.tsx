@@ -9,7 +9,7 @@ const MobileMenu = ({HeaderData}:{HeaderData: typeof AdminHeaderData | typeof ro
     return (
         <>
             <button onClick={() => setOpen(!open)}>
-                <AlignLeft className='w-6 h-6  hover:text-[#151515] hoverEffect md:hidden'/>
+                <AlignLeft className='w-8 h-8 pl-2  hover:text-[#151515] hoverEffect md:hidden'/>
             </button>
             <div className='md:hidden'>
                 <SideBar HeaderData={HeaderData} isOpen={open} onClose={() => setOpen(false)}/>

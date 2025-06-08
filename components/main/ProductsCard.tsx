@@ -31,7 +31,7 @@ const ProductsCard = ({ product,className }: productsCardProps) => {
             href={
               pathname.startsWith("/admin")
                 ? `/admin/product/${product.slug}`
-                : `/product/${product.slug}`
+                : `/products/${product.slug}`
             }
             className="block w-full h-full"
           >

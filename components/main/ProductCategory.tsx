@@ -1,6 +1,6 @@
 'use client'
 
-import React from 'react'
+import React, { useEffect } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
 import { ProductFieldsSchema } from '@/schemas/ProductUploadSchema'
@@ -19,7 +19,7 @@ import {
   SelectValue
 } from '../ui/select'
 import { ScrollArea } from '../ui/scroll-area'
-import useCategoriesStore from '@/store/categoryStore'
+import { fetchRawCategories } from '@/actions/productActions/FetchCategories'
 
 type productUploadType = z.infer<typeof ProductFieldsSchema>
 
@@ -28,9 +28,22 @@ interface Props {
   isPending: boolean
 }
 
-const ProductCategory = ({ form, isPending }: Props) => {
-  const categories = useCategoriesStore((state) => state.categories)
+interface Categories {
+  id: string,
+  title:string
+}
 
+const ProductCategory = ({ form, isPending }: Props) => {
+  const [categories, setCategories] = React.useState<Array<Categories>>([])
+  useEffect(() => {
+    const fetchcategories = async () => {
+      const categories = await fetchRawCategories()
+      if(categories){
+        setCategories(categories)
+      }
+    }
+    fetchcategories()
+  },[])
 
   return (
     <FormField
@@ -54,10 +67,10 @@ const ProductCategory = ({ form, isPending }: Props) => {
                 {categories.map((item, idx) => (
                   <SelectItem
                     key={idx}
-                    value={item.category}
+                    value={item.title}
                     className="capitalize"
                   >
-                    {item.category}
+                    {item.title}
                   </SelectItem>
                 ))}
               </ScrollArea>

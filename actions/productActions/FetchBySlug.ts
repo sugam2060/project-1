@@ -1,11 +1,8 @@
-'use server'
-import {db} from '@/lib/db'
-import { redirect } from 'next/navigation'
+import { db } from "@/lib/db";
 
-
-export const fetchBySlug = async (slug:string) => {
+export const fetchSingleProduct = async (slug: string) => {
     try {
-        const Product = await db.product.findUnique({
+        const product = await db.product.findUnique({
             where:{
                 slug:slug
             },
@@ -18,14 +15,9 @@ export const fetchBySlug = async (slug:string) => {
                 }
             }
         })
-
-        if(!Product) {
-            redirect('/admin/product')
-        }
-
-        return Product
+        return product;
     } catch (error) {
-        console.log('Error fetching by slug')
-        redirect('/admin/product')
+        console.log("Error fetching product:", error);
+        return null;
     }
 }
