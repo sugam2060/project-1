@@ -8,13 +8,13 @@ import { Checkbox } from '@/components/ui/checkbox'
 import { Input } from '@/components/ui/input'
 import { Search, X, Grid3X3 } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { fetchCategories } from '@/actions/productActions/FetchCategories'
 
 interface Category {
   category: string;
 }
 
 interface CategoryFilterProps {
-  categories: Category[];
   selectedCategories: string[];
   setSelectedCategories: (categories: string[]) => void;
   onApplyFilter: () => void;
@@ -22,7 +22,6 @@ interface CategoryFilterProps {
 }
 
 const CategoryFilter = ({
-  categories,
   selectedCategories,
   setSelectedCategories,
   onApplyFilter,
@@ -31,11 +30,21 @@ const CategoryFilter = ({
   const [isOpen, setIsOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [localSelectedCategories, setLocalSelectedCategories] = useState<string[]>(selectedCategories);
-
+  const [categories, setCategories] = useState<Category[]>([]);
 
   useEffect(() => {
     setLocalSelectedCategories(selectedCategories);
   }, [selectedCategories]);
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      const cat = await fetchCategories();
+      if (cat) {
+        setCategories(cat);
+      }
+    }
+    loadCategories()
+  }, [])
 
 
   // Filter categories based on search term
@@ -220,12 +229,20 @@ const CategoryFilter = ({
               className="gap-1 pr-1"
             >
               {category}
-              <button
+              <span
                 onClick={() => clearSingleCategory(category)}
-                className="ml-1 hover:bg-gray-300 rounded-full p-0.5"
+                className="ml-1 hover:bg-gray-300 rounded-full p-0.5 cursor-pointer"
+                role="button"
+                tabIndex={0}
+                aria-label={`Remove ${category}`}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    clearSingleCategory(category);
+                  }
+                }}
               >
                 <X className="h-3 w-3" />
-              </button>
+              </span>
             </Badge>
           ))}
           {selectedCategories.length > 3 && (

@@ -1,6 +1,7 @@
 import Container from '@/components/main/Container'
 import ProductGrid from '@/components/main/ProductGrid'
 import ProductUpload from '@/components/main/ProductUpload'
+import UploadNewCategory from '@/components/main/UploadNewCategory'
 import React from 'react'
 
 const AdminProductsPage = async () => {
@@ -11,6 +12,8 @@ const AdminProductsPage = async () => {
           <div className="bg-gray-100 pt-6 px-4 max-h-screen overflow-y-auto custom-scroll">
             <h2 className='text-center font-semibold text-lg md:text-xl lg:text-2xl mb-6'>Upload Product</h2>
             <ProductUpload />
+            <hr className=' border-black'/>
+            <UploadNewCategory/>
           </div>
         {/* Product Grid Section */}
         <div className="pt-6 px-4 bg-gray-100">

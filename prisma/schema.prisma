@@ -106,5 +106,5 @@ model TrendingProduct {
 
 model categories {
   id   String   @id @default(uuid())
-  title String
+  title String @unique
 }

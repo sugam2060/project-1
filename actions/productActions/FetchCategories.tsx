@@ -8,7 +8,6 @@ export const fetchCategories = unstable_cache(async () => {
             distinct: ['category'],
             select: {
                 category: true,
-                slug: true
             }
         })
         return categories

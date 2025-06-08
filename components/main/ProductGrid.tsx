@@ -12,7 +12,6 @@ import { useInView } from 'react-intersection-observer'
 import { Loader2, SlidersHorizontal } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import useCategoriesStore from '@/store/categoryStore'
 
 
 type productType = z.infer<typeof ProductFieldFetchsSchema>
@@ -47,9 +46,6 @@ const ProductGrid = ({ className, limit,filter }: ProductGridProps) => {
     setSelectedCategories([]);
   }
 }, [filter]);
-
-
-  const categories = useCategoriesStore((state) => state.categories)
 
   const { ref, inView } = useInView({
     threshold: 1.0,
@@ -175,7 +171,6 @@ const ProductGrid = ({ className, limit,filter }: ProductGridProps) => {
           </div>
 
           <CategoryFilter
-            categories={categories}
             selectedCategories={selectedCategories}
             setSelectedCategories={setSelectedCategories}
             onApplyFilter={handleApplyFilters}
