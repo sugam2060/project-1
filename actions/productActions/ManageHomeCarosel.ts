@@ -3,6 +3,8 @@ import sharp from 'sharp'
 import { writeFile, readdir, mkdir } from 'fs/promises'
 import path from 'path'
 import { randomUUID } from 'crypto'
+import {put} from '@vercel/blob'
+
 
 interface props {
   images: File[]
@@ -51,3 +53,32 @@ export const uploadAndConvertHomeCaroselImages = async ({ images }: props) => {
     return { error: 'Something went wrong during upload' }
   }
 }
+
+
+export const OnlyForVercel = async ({ images }: props) => {
+  if (images.length === 0) return {};
+
+  if (images.length > 5) return { error: 'Only 5 images can be saved' };
+
+  try {
+    const uploadedUrls: string[] = [];
+
+    for (const image of images) {
+      const buffer = Buffer.from(await image.arrayBuffer());
+      const pngBuffer = await sharp(buffer).png({ quality: 90 }).toBuffer();
+      const filename = `${randomUUID()}.png`;
+
+      const { url } = await put(`carousel/${filename}`, pngBuffer, {
+        contentType: 'image/png',
+        access:'public'
+      });
+
+      uploadedUrls.push(url);
+    }
+
+    return { success: 'Images uploaded', urls: uploadedUrls };
+  } catch (err) {
+    console.error('Upload failed:', err);
+    return { error: 'Something went wrong during upload' };
+  }
+};

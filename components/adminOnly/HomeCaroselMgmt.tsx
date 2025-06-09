@@ -2,7 +2,7 @@
 import Image from 'next/image'
 import React, { useState, useTransition } from 'react'
 import { Button } from '../ui/button'
-import { uploadAndConvertHomeCaroselImages } from '@/actions/productActions/ManageHomeCarosel'
+import { OnlyForVercel } from '@/actions/productActions/ManageHomeCarosel'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -42,7 +42,7 @@ const HomeCaroselMgmt = () => {
         setFormSuccess('')
         setTransition(() => {
             console.log(data)
-            uploadAndConvertHomeCaroselImages(data).then((res) => {
+            OnlyForVercel(data).then((res) => {
                 setFormError(res?.error || '')
                 setFormSuccess(res?.success || '')
                 queryClient.invalidateQueries({queryKey:['home-carousel-images']})
