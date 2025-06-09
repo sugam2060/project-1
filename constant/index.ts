@@ -56,7 +56,7 @@ export const AdminHeaderData = [
     },
     {
         title:'Miscellaneus',
-        href:'/admin/miscellaneus'
+        href:'/admin/misc'
     },
     {
         title:'Developer Contact',

@@ -37,7 +37,6 @@ const ProductUpload = () => {
 
     const onSubmit = (data: z.infer<typeof ProductFieldsSchema>) => {
         setFormError('')
-        console.log(data)
         setFormSuccess('')
         setTransition(() => {
             uploadProductsRemote(data).then((res) => {

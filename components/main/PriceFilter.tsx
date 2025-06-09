@@ -90,14 +90,13 @@ const PriceFilter = ({
             {hasActiveFilter && (
               <Badge variant="secondary" className="ml-2 h-5 px-1.5 text-xs flex items-center gap-1">
                 ${priceRange.min} - ${priceRange.max}
-                <button
+                <span
                   onClick={resetFilter}
                   className="hover:bg-gray-300 rounded-full p-0.5"
                   aria-label="Clear price filter"
-                  type="button"
                 >
                   <X className="h-3 w-3" />
-                </button>
+                </span>
               </Badge>
             )}
           </Button>
@@ -190,21 +189,6 @@ const PriceFilter = ({
           </div>
         </PopoverContent>
       </Popover>
-
-      {/* Active Filter Display */}
-      {/* {hasActiveFilter && (
-        <div className="flex items-center gap-1 ml-2">
-          <Badge variant="secondary" className="gap-1">
-            ${priceRange.min} - ${priceRange.max}
-            <button
-              onClick={resetFilter}
-              className="ml-1 hover:bg-gray-300 rounded-full p-0.5"
-            >
-              <X className="h-3 w-3" />
-            </button>
-          </Badge>
-        </div>
-      )} */}
     </div>
   );
 };

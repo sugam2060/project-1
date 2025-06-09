@@ -68,7 +68,10 @@ const authConfig: NextAuthConfig = {
     }
 
   },
-
+  pages:{
+    signIn:'/auth/login',
+    error:'/'
+  },
   session: {
     strategy: "jwt",
     maxAge: 5 * 24 * 60 * 60, // 5 days

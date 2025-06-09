@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Raleway } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "react-hot-toast";
+import Provider from "./Provider";
 
 const RalewayFont = Raleway({
   variable: "--font-raleway",
@@ -17,8 +18,8 @@ export const metadata: Metadata = {
     template: "%s | Kalika Kasta Furniture Udyog",
   },
   description: "Kalika Kasta Furniture Udyog is a trusted furniture manufacturer and seller based in Dhangadhi, Western Nepal. We specialize in high-quality wooden furniture including beds, sofas, cupboards, dining sets, and office furnishings. Discover durable, stylish, and affordable furniture handcrafted to suit your home or business needs.",
-  twitter:{
-    card:'summary_large_image'
+  twitter: {
+    card: 'summary_large_image'
   }
 };
 
@@ -33,16 +34,18 @@ export default function RootLayout({
       <body
         className={`${RalewayFont.variable} antialiased`}
       >
-        {children}
+        <Provider>
+          {children}
+        </Provider>
         <Toaster
-            position="bottom-right"
-            toastOptions={{
-              style: {
-                background: "#000000",
-                color: "#ffffff",
-              },
-            }}
-          />
+          position="bottom-right"
+          toastOptions={{
+            style: {
+              background: "#000000",
+              color: "#ffffff",
+            },
+          }}
+        />
       </body>
     </html>
   );

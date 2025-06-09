@@ -2,7 +2,6 @@ import Container from "@/components/main/Container";
 import CategoryGrid from "@/components/RootOnly/CategoryGrid";
 import HomeImageCarosel from "@/components/RootOnly/HomeImageCarosel";
 import TrendingGrid from "@/components/RootOnly/TrendingGrid";
-import Link from "next/link";
 
 
 export default function RootPage() {
@@ -18,12 +17,10 @@ export default function RootPage() {
         <div className="mx-auto max-w-[90%] mt-10">
 
           <TrendingGrid limit={8} />
-          <Link href={'/products?category=Table'}>
-            <div>
-              <h2 className='md:text-left font-semibold text-xl md:text-3xl lg:text-3xl mb-6'>Categories</h2>
-              <CategoryGrid/>
-            </div>
-          </Link>
+          <div>
+            <h2 className='md:text-left font-semibold text-xl md:text-3xl lg:text-3xl mb-6'>Categories</h2>
+            <CategoryGrid />
+          </div>
         </div>
       </Container>
     </div>

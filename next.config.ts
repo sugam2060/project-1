@@ -13,10 +13,6 @@ const nextConfig: NextConfig = {
         serverActions:{
             bodySizeLimit:'100mb'
         },
-        staleTimes:{
-            dynamic: 60 * 60 * 24, // 1 day
-            static: 60 * 60 * 24, // 1 day
-        },
         // dynamicIO: true,
     }
 };

@@ -3,7 +3,7 @@ import { db } from "@/lib/db"
 import { v2 as cloudinary, UploadApiResponse } from 'cloudinary';
 import { ProductFieldsSchema } from "@/schemas/ProductUploadSchema"
 import { z } from "zod"
-import { v5 as uuidv5 } from 'uuid'
+import { v4 as uuidv4 } from 'uuid'
 import path from "path";
 import { mkdir, writeFile } from "fs/promises";
 import { revalidatePath } from "next/cache";
@@ -40,7 +40,7 @@ export const uploadProductsRemote = async (products: z.infer<typeof ProductField
                 const result = await new Promise<UploadApiResponse>((resolve, reject) => {
                     cloudinary.uploader.upload_stream({
                         folder: 'products',
-                        public_id: `${uuidv5(file.name, uuidv5.URL)}`,
+                        public_id: `${file.name}-${uuidv4()}`,
                     },
                         (error, result) => {
                             if (error) return reject('failer to upload')
@@ -109,7 +109,7 @@ export const uploadProductsLocal = async (products: z.infer<typeof ProductFields
             if (!image || image.size === 0) return {error:'Failed to upload images. Try again later'}
 
             const ext = image.name.split('.').pop()
-            const uniqueName = `${Date.now()}-${uuidv5(image.name, uuidv5.URL)}.${ext}`
+            const uniqueName = `${Date.now()}-${image.name}-${uuidv4()}.${ext}`
             const buffer = Buffer.from(await image.arrayBuffer());
             const filePath = path.join(uploadDir, uniqueName)
 

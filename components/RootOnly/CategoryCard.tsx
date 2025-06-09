@@ -35,7 +35,7 @@ const ImageTitleCard: React.FC<CardProps> = ({ categoriesData, className }) => {
 
         {/* Semi-transparent white stripe with centered title */}
         <div className="absolute top-1/2 left-0 w-full h-[50px] -translate-y-1/2 bg-white/80 flex items-center justify-center">
-          <span className="text-black font-semibold text-lg tracking-wider">{categoriesData.category}</span>
+          <span className="text-black font-semibold text-lg tracking-wider capitalize">{categoriesData.category}</span>
         </div>
       </div>
     </Link>
