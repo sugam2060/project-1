@@ -108,3 +108,9 @@ model categories {
   id   String   @id @default(uuid())
   title String @unique
 }
+
+
+model carosel {
+  id String    @id @default(uuid())
+  images String[]
+}

@@ -2,7 +2,7 @@
 import Image from 'next/image'
 import React, { useState, useTransition } from 'react'
 import { Button } from '../ui/button'
-import { uploadAndConvertHomeCaroselImages,getCaroselImages } from '@/actions/productActions/ManageHomeCarosel'
+import { uploadAndConvertHomeCaroselImages, getCaroselImages } from '@/actions/productActions/ManageHomeCarosel'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -18,14 +18,15 @@ const HomeCaroselMgmt = () => {
     const [isPending, setTransition] = useTransition()
     const [formError, setFormError] = useState<string>('')
     const [formSuccess, setFormSuccess] = useState<string>('')
+const [removingImage, setRemovingImage] = useState<string | null>(null)
 
     const queryClient = useQueryClient()
 
-  // ✅ Use React Query to fetch carousel images
-  const { data: images = [], /*isLoading*/ } = useQuery({
-    queryKey: ['home-carousel-images'],
-    queryFn: getCaroselImages,
-  })
+    // ✅ Use React Query to fetch carousel images
+    const { data: images = [], /*isLoading*/ } = useQuery({
+        queryKey: ['home-carousel-images'],
+        queryFn: getCaroselImages,
+    })
 
     const form = useForm<z.infer<typeof caroselSchama>>({
         resolver: zodResolver(caroselSchama),
@@ -42,16 +43,21 @@ const HomeCaroselMgmt = () => {
             uploadAndConvertHomeCaroselImages(data).then((res) => {
                 setFormError(res?.error || '')
                 setFormSuccess(res?.success || '')
-                queryClient.invalidateQueries({queryKey:['home-carousel-images']})
+                queryClient.invalidateQueries({ queryKey: ['home-carousel-images'] })
             })
         })
     })
 
-    const removeHomeCaroselImage = async (imageName:string) => {
-        console.log(imageName)
-        await deleteHomeCarouselImage(imageName)
-        queryClient.invalidateQueries({queryKey:['home-carousel-images']})
-    }
+    const removeHomeCaroselImage = async (imageName: string) => {
+  setRemovingImage(imageName)
+  try {
+    await deleteHomeCarouselImage(imageName)
+    queryClient.invalidateQueries({ queryKey: ['home-carousel-images'] })
+  } finally {
+    setRemovingImage(null)
+  }
+}
+
 
     return (
         <div className=''>
@@ -102,10 +108,13 @@ const HomeCaroselMgmt = () => {
 
             {/* Uploaded Image Display area */}
             <div className='max-h-[210px] min-h-[210px] overflow-auto'>
-                {images.map((image,idx) => (
+                {images.map((image, idx) => (
                     <div key={idx} className='flex items-center justify-between p-2'>
-                        <Image src={image} width={100} height={100} alt='carosel' className='max-h-[50px] object-cover'/>
-                        <Button type='button' variant={'destructive'} onClick={() => removeHomeCaroselImage(image)}>Remove</Button>
+                        <Image src={image} width={100} height={100} alt='carosel' className='max-h-[50px] object-cover' />
+                        <Button type='button' className='flex   ' variant={'destructive'} disabled={removingImage === image} onClick={() => removeHomeCaroselImage(image)}>
+                            <p>Remove</p>
+                            {removingImage === image && <Loader2 className='animate-spin text-black'/>}
+                        </Button>
                     </div>
                 ))}
             </div>

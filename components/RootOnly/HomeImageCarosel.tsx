@@ -11,14 +11,22 @@ const HomeImageCarosel = () => {
   const [isLoaded, setIsLoaded] = useState(false);
 
   // Fetch images on mount
+  
   useEffect(() => {
     const fetchFiles = async () => {
-      const images = await getCaroselImages();
-      if (Array.isArray(images) && images.length > 0) {
-        setImages(images);
-        setIsLoaded(true);
+      const fetchedImages = await getCaroselImages();
+
+      console.log(fetchedImages);
+
+      if (Array.isArray(fetchedImages) && fetchedImages.length > 0) {
+        setImages(fetchedImages);
+      } else {
+        setImages([]); // fallback to empty array
       }
+
+      setIsLoaded(true);
     };
+
     fetchFiles();
   }, []);
 

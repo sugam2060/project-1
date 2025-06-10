@@ -51,7 +51,7 @@ const authConfig: NextAuthConfig = {
           name: user.name,
           image:user.image ?? null,
           email: user.email ?? null,
-          role: account.provider === 'credentials' ? 'ADMIN' : 'USER',
+          role: user.role,
         }
       }
       return token
