@@ -20,7 +20,7 @@
 # production
 /build
 /public/uploaded
-# /public/carosel
+/public/carosel
 
 # misc
 .DS_Store

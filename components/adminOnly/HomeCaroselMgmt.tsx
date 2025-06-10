@@ -2,7 +2,7 @@
 import Image from 'next/image'
 import React, { useState, useTransition } from 'react'
 import { Button } from '../ui/button'
-import { uploadAndConvertHomeCaroselImages } from '@/actions/productActions/ManageHomeCarosel'
+import { uploadAndConvertHomeCaroselImages,getCaroselImages } from '@/actions/productActions/ManageHomeCarosel'
 import { z } from 'zod'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -10,7 +10,6 @@ import { Form, FormControl, FormField, FormItem, FormLabel, } from '../ui/form'
 import { CardContent, CardFooter } from '../ui/card'
 import { Input } from '../ui/input'
 import { Loader2 } from 'lucide-react'
-import { getCaroselImages } from '@/actions/productActions/getHomeCarosel'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { deleteHomeCarouselImage } from '@/actions/productActions/removeHomeCaroselImage'
 
@@ -55,8 +54,6 @@ const HomeCaroselMgmt = () => {
         await deleteHomeCarouselImage(imageName)
         queryClient.invalidateQueries({queryKey:['home-carousel-images']})
     }
-
-
 
     return (
         <div className=''>

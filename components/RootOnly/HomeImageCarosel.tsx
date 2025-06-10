@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
-import { getCaroselImages } from '@/actions/productActions/getHomeCarosel';
+import { getCaroselImages } from '@/actions/productActions/ManageHomeCarosel';
 
 const HomeImageCarosel = () => {
   const [index, setIndex] = useState(0);
