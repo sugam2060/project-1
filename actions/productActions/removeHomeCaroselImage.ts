@@ -26,27 +26,37 @@ export const deleteHomeCarouselImage = async (imageUrl: string) => {
   let publicId: string;
   try {
     const { pathname } = new URL(imageUrl);
-    // pathname = "/<stuff>/upload/v.../carosel/foo_bar.jpg"
-    const afterUpload = pathname.split('/upload/')[1];
-    if (!afterUpload) throw new Error('Not a Cloudinary URL');
-    publicId = afterUpload.replace(/\.(jpe?g|png|webp|gif|avif)$/i, ''); // strip extension
-  } catch (err) {
+  // pathname = "/image/upload/v1749557991/carosel/pexels-pixabay-276583.jpg-bf45f3d1-b696-4378-bf0f-2a59c3a97a37.jpg"
+  
+  // Find the version pattern and extract everything after it
+  const versionMatch = pathname.match(/\/v\d+\/(.+)$/);
+  if (!versionMatch) {
+    throw new Error('No version found in Cloudinary URL');
+  }
+  
+  // Get the full path after version, then remove the file extension
+  const fullPath = versionMatch[1]; // "carosel/pexels-pixabay-276583.jpg-bf45f3d1-b696-4378-bf0f-2a59c3a97a37.jpg"
+  publicId = fullPath.replace(/\.[^.]+$/, ''); // Remove the last file extension  
+} catch (err) {
     throw new Error(`deleteHomeCarouselImage: invalid imageUrl → ${err}`);
   }
 
   // --- 2. delete from Cloudinary ------------------------------------------------------
-  try {
-    const cloudRes = await cloudinary.uploader.destroy(publicId, {
-      invalidate: true,   // also purge the CDN
-      resource_type: 'image',
-    });
+ try {
+  const cloudRes = await cloudinary.uploader.destroy(publicId, {
+    invalidate: true,
+    resource_type: 'image',
+  });
 
-    if (cloudRes.result !== 'ok' && cloudRes.result !== 'not found') {
-      throw new Error(`Cloudinary deletion failed: ${JSON.stringify(cloudRes)}`);
-    }
-  } catch (error) {
-    //ignore the error
+  if(cloudRes.result !== 'ok') return
+
+  if (cloudRes.result !== 'ok' && cloudRes.result !== 'not found') {
+    throw new Error(`Cloudinary deletion failed: ${JSON.stringify(cloudRes)}`);
   }
+} catch (error) {
+  console.error('Error deleting from Cloudinary:', error);
+  throw error;
+}
 
   // --- 3. update DB inside a transaction ---------------------------------------------
   try {
