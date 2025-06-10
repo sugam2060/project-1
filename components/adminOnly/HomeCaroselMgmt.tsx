@@ -12,10 +12,8 @@ import { Input } from '../ui/input'
 import { Loader2 } from 'lucide-react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { deleteHomeCarouselImage } from '@/actions/productActions/removeHomeCaroselImage'
+import { caroselSchama } from '@/schemas/caroselSchema'
 
-export const caroselSchama = z.object({
-    images: z.array(z.instanceof(File)).min(1, { message: 'At least 1 image is required' }).max(5, { message: 'Only 5 images are allowded' }),
-})
 const HomeCaroselMgmt = () => {
     const [isPending, setTransition] = useTransition()
     const [formError, setFormError] = useState<string>('')
