@@ -68,7 +68,8 @@ export const fetchTrendingProducts = unstable_cache(
                                 id: true,
                                 productId: true,
                                 imageUrl: true,
-                            }
+                            },
+                            orderBy:{position:'asc'}
                         }
                     }
                 }

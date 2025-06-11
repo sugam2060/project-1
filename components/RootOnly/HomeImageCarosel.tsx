@@ -45,7 +45,7 @@ const HomeImageCarosel = () => {
   }, []);
 
   return (
-    <div className="relative w-full h-[300px] sm:h-[400px] md:h-[500px] 3xl:h-[700px] overflow-hidden shadow-md">
+    <div className="relative w-full h-[300px] sm:h-[200px] md:h-[400px] 3xl:h-[600px] overflow-hidden shadow-md">
       {/* Image Slide Wrapper */}
       <div className="relative w-full h-full">
         <AnimatePresence initial={false}>

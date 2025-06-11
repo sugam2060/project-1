@@ -92,7 +92,7 @@ model ProductImage {
   productId String
   imageUrl  String
   product   Product  @relation(fields: [productId], references: [id])
-
+  position Int
   @@index([productId])
 }
 

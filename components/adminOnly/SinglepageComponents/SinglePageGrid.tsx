@@ -1,27 +1,27 @@
 "use client";
 
 import { useTransition } from "react";
-import ImageArray from "./ImageArray";
-import ProductContentComponent from "./ProductContentEditableForm";
+import { FormProvider, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { z } from "zod";
+import toast from "react-hot-toast";
+import {
+  productUpdateSchema,
+  ProductFieldFetchsSchema,
+} from "@/schemas/ProductUploadSchema";
 import { fetchSingleProduct } from "@/actions/productActions/FetchBySlug";
 import { updateProduct } from "@/actions/productActions/UpdateProduct";
 import {
   addToTrending,
   removeFromTrending,
-  fetchTrending
+  fetchTrending,
 } from "@/actions/productActions/TrendingProductManagement";
-import {
-  productUpdateSchema,
-  ProductFieldFetchsSchema,
-} from "@/schemas/ProductUploadSchema";
-import { z } from "zod";
-import { FormProvider, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import ImageArray from "./ImageArray";
+import ProductContentComponent from "./ProductContentEditableForm";
+import UniversalLoader from "@/components/main/UniversalLoader"
 import { Button } from "@/components/ui/button";
-import { Loader2, Star, StarOff } from "lucide-react";
-import toast from "react-hot-toast";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-
+import { Star, StarOff } from "lucide-react";
 
 type Product = z.infer<typeof ProductFieldFetchsSchema>;
 type FormData = z.infer<typeof productUpdateSchema>;
@@ -48,30 +48,33 @@ const SinglePageGrid = ({ slug }: { slug: string }) => {
     resolver: zodResolver(productUpdateSchema),
     defaultValues: getDefaults(null),
   });
-  const { reset,getValues } = form;
+
+  const { reset, getValues } = form;
   const queryClient = useQueryClient();
 
-  /* fetch product */
-  useQuery({
+  const {
+  isLoading: loadingProduct,
+  } = useQuery({
     queryKey: ["fetch-editable-singlepage", slug],
     queryFn: async () => {
       const product = await fetchSingleProduct(slug);
       reset(getDefaults(product as Product));
       return product;
     },
-    staleTime: 2 * 60 * 1000,
   });
 
-  // Fetch trending status
-  const { data: trending } = useQuery({
+  const {
+    data: trending,
+    isLoading: loadingTrending,
+  } = useQuery({
     queryKey: ["trending", slug],
     queryFn: async () => {
-      const result = await fetchTrending(getValues().id)
-      return result
+      const result = await fetchTrending(getValues().id);
+      return result;
     },
+    enabled: !!getValues().id, // Prevent premature fetching
   });
 
-  /* submit updated product */
   const handleUpdate = form.handleSubmit((data) => {
     startTransition(async () => {
       await updateProduct(data);
@@ -82,7 +85,6 @@ const SinglePageGrid = ({ slug }: { slug: string }) => {
     });
   });
 
-  // Add / remove trending
   const handleToggleTrending = () => {
     const id = getValues().id;
     startTrendingTransition(async () => {
@@ -98,16 +100,21 @@ const SinglePageGrid = ({ slug }: { slug: string }) => {
     });
   };
 
+  // Show loader until both product and trending info are fetched
+  if (loadingProduct || loadingTrending) {
+    return <UniversalLoader text="Loading product details..." fullScreen />;
+  }
+
   return (
     <FormProvider {...form}>
-      {/* floating action button (FAB) */}
+      {/* Floating action buttons */}
       <div className="fixed z-50 flex gap-3 right-4 bottom-4 md:top-24 md:right-8">
         <Button
           disabled={isPending}
           onClick={handleUpdate}
           className="bg-blue-500/90 text-black hover:bg-green-600 hover:text-white"
         >
-          Update {isPending && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
+          {isPending ? "Updating..." : "Update"}
         </Button>
 
         <Button
@@ -115,7 +122,9 @@ const SinglePageGrid = ({ slug }: { slug: string }) => {
           onClick={handleToggleTrending}
           className="flex items-center gap-2 bg-yellow-400/90 hover:bg-yellow-600 text-black"
         >
-          {trending ? (
+          {isTrendingPending ? (
+            trending ? "Removing from Trending..." : "Adding to Trending..."
+          ) : trending ? (
             <>
               <StarOff className="h-4 w-4" />
               Remove from Trending
@@ -126,11 +135,10 @@ const SinglePageGrid = ({ slug }: { slug: string }) => {
               Add to Trending
             </>
           )}
-          {isTrendingPending && <Loader2 className="ml-2 h-4 w-4 animate-spin" />}
         </Button>
       </div>
 
-      {/* main content area */}
+      {/* Main content */}
       <div className="mx-auto max-w-6xl px-4 py-8">
         <div className="flex flex-col gap-8 md:grid md:grid-cols-2">
           <ImageArray />

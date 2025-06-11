@@ -1,8 +1,9 @@
 'use client'
+
 import { cn } from '@/lib/utils'
 import ProductsCard from './ProductsCard'
 import { fetchProducts, getPriceRange } from '@/actions/productActions/fetchData'
-import { useEffect, useState, useCallback, useRef } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import ProductLoadingSkeleton from './ProductLoadingSkeleton'
 import { ProductFieldFetchsSchema } from '@/schemas/ProductUploadSchema'
 import z from 'zod'
@@ -13,153 +14,146 @@ import { Loader2, SlidersHorizontal } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 
+/* ─── React-Query ─── */
+import {
+  useQuery,
+  useInfiniteQuery,
+  type InfiniteData,
+} from '@tanstack/react-query'
 
+/* ─── Types ─── */
 type productType = z.infer<typeof ProductFieldFetchsSchema>
 
 interface PriceRange {
-  min: number;
-  max: number;
+  min: number
+  max: number
 }
 
 interface ProductGridProps {
-  className?: string;
-  limit?: number;
-  filter?:string
+  className?: string
+  limit?: number
+  filter?: string
 }
 
-const ProductGrid = ({ className, limit,filter }: ProductGridProps) => {
-  const [allProducts, setAllProducts] = useState<productType[]>([]);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [priceRange, setPriceRange] = useState<PriceRange>({ min: 0, max: 10000 });
-  const [availablePriceRange, setAvailablePriceRange] = useState<PriceRange>({ min: 0, max: 10000 });
-  const [isLoading, setIsLoading] = useState(false);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
-  const [nextCursor, setNextCursor] = useState<string | null>(null);
-  const [hasNextPage, setHasNextPage] = useState(false);
+type ProductsResult = Awaited<ReturnType<typeof fetchProducts>>
+type PageParam = string | undefined
+type ProductsQueryKey = [
+  'products',
+  { limit: number; selectedCategories: string[]; priceRange: PriceRange }
+]
 
-  const skipNextFetch = useRef(false); // 👈 Fix flickering
-    const isFirstLoad = useRef(true); // 👈 only true for first mount
+export default function ProductGrid({
+  className,
+  limit = 12,
+  filter,
+}: ProductGridProps) {
+  /* ─── filter state ─── */
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(
+    filter ? [filter] : [],
+  )
+  const [priceRange, setPriceRange] = useState<PriceRange>({
+    min: 0,
+    max: 10000,
+  })
 
+  /* ─── price-bounds query ─── */
+  const {
+    data: availablePriceRange = { min: 0, max: 10000 },
+    isFetching: isFetchingPriceRange,
+  } = useQuery({
+    queryKey: ['priceRange', selectedCategories.sort().join(',')],
+    queryFn: () =>
+      getPriceRange(
+        selectedCategories.length ? selectedCategories : undefined,
+      ),
+    staleTime: 5 * 60 * 1000,
+  })
 
+  /* keep local priceRange within bounds */
   useEffect(() => {
-  if (filter) {
-    setSelectedCategories([filter]);
-  } else {
-    setSelectedCategories([]);
-  }
-}, [filter]);
-
-  const { ref, inView } = useInView({
-    threshold: 1.0,
-    rootMargin: '100px',
-  });
-
-  useEffect(() => {
-    const fetchAvailablePriceRange = async () => {
-      try {
-        const range = await getPriceRange(selectedCategories.length > 0 ? selectedCategories : undefined);
-        setAvailablePriceRange(range);
-
-        if (priceRange.min < range.min || priceRange.max > range.max) {
-          skipNextFetch.current = true;
-          setPriceRange({ min: range.min, max: range.max });
-        }
-      } catch (error) {
-        console.error('Error fetching price range:', error);
-      }
-    };
-
-    fetchAvailablePriceRange();
-  }, [selectedCategories]);
-
-  const fetchInitialData = useCallback(async () => {
-    if (skipNextFetch.current) {
-      skipNextFetch.current = false;
-      return;
+    if (
+      priceRange.min < availablePriceRange.min ||
+      priceRange.max > availablePriceRange.max
+    ) {
+      setPriceRange({
+        min: availablePriceRange.min,
+        max: availablePriceRange.max,
+      })
     }
+  }, [availablePriceRange])
 
-    setIsLoading(true);
-    try {
-      const productsResult = await fetchProducts({
-        limit: limit as number,
-        selectedCategories: selectedCategories.length > 0 ? selectedCategories : undefined,
+  /* ─── products: useInfiniteQuery ─── */
+  const {
+    data,
+    isLoading,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useInfiniteQuery<
+    ProductsResult,                                   // TQueryFnData
+    Error,                                            // TError
+    InfiniteData<ProductsResult, PageParam>,          // TData
+    ProductsQueryKey,                                 // TQueryKey
+    PageParam                                         // TPageParam
+  >({
+    queryKey: ['products', { limit, selectedCategories, priceRange }],
+    initialPageParam: undefined,                      // satisfies overload
+    enabled: !isFetchingPriceRange,
+
+    queryFn: ({ pageParam }) =>
+      fetchProducts({
+        limit,
+        cursor: pageParam,                            // string | undefined
+        selectedCategories:
+          selectedCategories.length ? selectedCategories : undefined,
         priceRange:
-          priceRange.min !== availablePriceRange.min || priceRange.max !== availablePriceRange.max
+          priceRange.min !== availablePriceRange.min ||
+          priceRange.max !== availablePriceRange.max
             ? priceRange
             : undefined,
-      });
+      }),
 
-      setAllProducts(productsResult.products || []);
-      setNextCursor(productsResult.nextCursor);
-      setHasNextPage(productsResult.hasNextPage);
-    } catch (error) {
-      console.error('Error fetching products:', error);
-      setAllProducts([]);
-      setNextCursor(null);
-      setHasNextPage(false);
-    } finally {
-      setIsLoading(false);
-      isFirstLoad.current = false;
-    }
-  }, [limit, selectedCategories, priceRange, availablePriceRange]);
+    getNextPageParam: (last) => last.nextCursor ?? undefined,
+  })
 
-  useEffect(() => {
-    fetchInitialData();
-  }, [fetchInitialData]);
+  /* flatten pages safely */
+  const allProducts: productType[] =
+    data?.pages.flatMap((page: ProductsResult) => page.products) ?? []
 
-  const loadMoreProducts = useCallback(async () => {
-    if (isLoadingMore || !hasNextPage || !nextCursor) return;
+  const safeProducts = allProducts.map((p) => ({
+    ...p,
+    discount: p.discount ?? 0,
+  }))
 
-    setIsLoadingMore(true);
-    try {
-      const result = await fetchProducts({
-        limit: limit as number,
-        cursor: nextCursor,
-        selectedCategories: selectedCategories.length > 0 ? selectedCategories : undefined,
-        priceRange: priceRange.min !== availablePriceRange.min || priceRange.max !== availablePriceRange.max
-          ? priceRange
-          : undefined
-      });
-
-      if (result?.products) {
-        setAllProducts((prev) => [...prev, ...result.products]);
-        setNextCursor(result.nextCursor);
-        setHasNextPage(result.hasNextPage);
-      }
-    } catch (error) {
-      console.error('Error loading more products:', error);
-    } finally {
-      setIsLoadingMore(false);
-    }
-  }, [limit, nextCursor, selectedCategories, priceRange, availablePriceRange, isLoadingMore, hasNextPage]);
+  /* ─── infinite-scroll sentinel ─── */
+  const { ref, inView } = useInView({ threshold: 1, rootMargin: '100px' })
 
   useEffect(() => {
-    if (inView && !isLoadingMore && hasNextPage && !isLoading) {
-      loadMoreProducts();
-    }
-  }, [inView, loadMoreProducts, isLoadingMore, hasNextPage, isLoading]);
+    if (inView && hasNextPage && !isFetchingNextPage) fetchNextPage()
+  }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage])
 
+  /* ─── helpers ─── */
   const handleApplyFilters = useCallback(() => {
-    // The useEffects will automatically trigger when filters change
-  }, []);
+    /* no-op – filters auto-refresh via queryKey */
+  }, [])
 
   const clearAllFilters = () => {
-    setSelectedCategories([]);
-    setPriceRange({ min: availablePriceRange.min, max: availablePriceRange.max });
-  };
+    setSelectedCategories([])
+    setPriceRange({
+      min: availablePriceRange.min,
+      max: availablePriceRange.max,
+    })
+  }
 
-  const safeProducts = allProducts.map((product) => ({
-    ...product,
-    discount: product.discount ? product.discount : 0
-  }));
-
-  const hasActiveFilters = selectedCategories.length > 0 ||
+  const hasActiveFilters =
+    selectedCategories.length > 0 ||
     priceRange.min !== availablePriceRange.min ||
-    priceRange.max !== availablePriceRange.max;
+    priceRange.max !== availablePriceRange.max
 
+  /* ─── render ─── */
   return (
     <div className='mb-3'>
-      {/* Filter Section */}
+      {/* Filters */}
       <div className='space-y-3 mb-4'>
         <div className='flex gap-3 items-center flex-wrap'>
           <div className='flex items-center gap-2'>
@@ -183,10 +177,10 @@ const ProductGrid = ({ className, limit,filter }: ProductGridProps) => {
 
           {hasActiveFilters && (
             <Button
-              variant="ghost"
-              size="sm"
+              variant='ghost'
+              size='sm'
               onClick={clearAllFilters}
-              className="h-8 px-2 text-xs"
+              className='h-8 px-2 text-xs'
             >
               Clear All
             </Button>
@@ -197,27 +191,31 @@ const ProductGrid = ({ className, limit,filter }: ProductGridProps) => {
           <div className='flex items-center gap-2 text-xs text-muted-foreground'>
             <span>Active filters:</span>
             {selectedCategories.length > 0 && (
-              <Badge variant="outline" className="text-xs">
-                {selectedCategories.length} {selectedCategories.length === 1 ? 'category' : 'categories'}
+              <Badge variant='outline' className='text-xs'>
+                {selectedCategories.length}{' '}
+                {selectedCategories.length === 1 ? 'category' : 'categories'}
               </Badge>
             )}
-            {(priceRange.min !== availablePriceRange.min || priceRange.max !== availablePriceRange.max) && (
-              <Badge variant="outline" className="text-xs">
-                Price: ${priceRange.min} - ${priceRange.max}
+            {(priceRange.min !== availablePriceRange.min ||
+              priceRange.max !== availablePriceRange.max) && (
+              <Badge variant='outline' className='text-xs'>
+                Price: ${priceRange.min}-${priceRange.max}
               </Badge>
             )}
           </div>
         )}
       </div>
 
+      {/* List / Skeleton */}
       {isLoading ? (
-        <ProductLoadingSkeleton length={limit as number} className={className} />
+        <ProductLoadingSkeleton length={limit} className={className} />
       ) : (
         <>
-          <div className="mb-4 text-sm text-muted-foreground">
+          <div className='mb-4 text-sm text-muted-foreground'>
             {allProducts.length > 0 ? (
               <>
-                Showing {allProducts.length} product{allProducts.length !== 1 ? 's' : ''}
+                Showing {allProducts.length} product
+                {allProducts.length !== 1 && 's'}
                 {hasActiveFilters && ' matching your filters'}
               </>
             ) : (
@@ -225,22 +223,20 @@ const ProductGrid = ({ className, limit,filter }: ProductGridProps) => {
             )}
           </div>
 
-          <div className={cn("mx-2 mb-3", className)}>
+          <div className={cn('mx-2 mb-3', className)}>
             {safeProducts.length > 0 ? (
-              safeProducts.map((product) => (
-                <ProductsCard key={product.id} product={product} />
-              ))
+              safeProducts.map((p) => <ProductsCard key={p.id} product={p} />)
             ) : (
-              <div className="text-center py-12">
-                <div className="text-gray-500 mb-2">
+              <div className='text-center py-12'>
+                <div className='text-gray-500 mb-2'>
                   No products found matching your filters.
                 </div>
                 {hasActiveFilters && (
                   <Button
-                    variant="outline"
-                    size="sm"
+                    variant='outline'
+                    size='sm'
                     onClick={clearAllFilters}
-                    className="mt-2"
+                    className='mt-2'
                   >
                     Clear All Filters
                   </Button>
@@ -249,16 +245,17 @@ const ProductGrid = ({ className, limit,filter }: ProductGridProps) => {
             )}
           </div>
 
+          {/* infinite loader */}
           {hasNextPage && (
             <div ref={ref} className='flex justify-center items-center p-4'>
-              {isLoadingMore && (
+              {isFetchingNextPage && (
                 <Loader2 className='w-6 h-6 mx-auto mt-10 mb-2 animate-spin' />
               )}
             </div>
           )}
 
           {!hasNextPage && allProducts.length > 0 && (
-            <div className="text-center py-4 text-gray-500 text-sm">
+            <div className='text-center py-4 text-gray-500 text-sm'>
               You&apos;ve reached the end of the catalog
             </div>
           )}
@@ -267,5 +264,3 @@ const ProductGrid = ({ className, limit,filter }: ProductGridProps) => {
     </div>
   )
 }
-
-export default ProductGrid

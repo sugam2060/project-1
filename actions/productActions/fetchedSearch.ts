@@ -27,7 +27,7 @@ export const fetchSearch = unstable_cache(
         return db.product.findMany({
             where: { OR: orConditions },
             include: {
-                images: { select: { id: true, imageUrl: true } },
+                images: { select: { id: true, imageUrl: true }, orderBy:{position:'asc'} },
             },
             orderBy: { name: "asc" },
         });

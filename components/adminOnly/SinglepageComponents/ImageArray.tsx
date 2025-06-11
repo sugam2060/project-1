@@ -40,13 +40,19 @@ const ImageArray = () => {
   const atMax = total >= MAX
   const previews = [...remotePrev, ...localPrev]
 
-  const pickFiles: React.ChangeEventHandler<HTMLInputElement> = e => {
-    if (!e.target.files) return
-    const incoming = Array.from(e.target.files).slice(0, MAX - total)
-    if (incoming.length)
-      setValue('image', [...local, ...incoming], { shouldDirty: true })
-    e.target.value = ''
+  const pickFiles: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+  if (!e.target.files) return;
+
+  const incoming = Array.from(e.target.files).slice(0, MAX - total);
+
+  if (incoming.length) {
+    // Place newly selected images before existing ones, so first upload is always index 0
+    setValue("image", [...incoming, ...local], { shouldDirty: true });
   }
+
+  e.target.value = ""; // Reset input
+};
+
 
   const removeRemote = (id: string) =>
     setValue('imageUrls', remote.filter(i => i.id !== id), { shouldDirty: true })

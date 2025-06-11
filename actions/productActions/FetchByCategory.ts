@@ -29,7 +29,8 @@ export const fetchByCategory = async ({number,page,category}:props) => {
                     select:{
                         id:true,
                         imageUrl:true
-                    }
+                    },
+                    orderBy:{position:'asc'}
                 }
             }
         })

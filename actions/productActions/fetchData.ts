@@ -83,7 +83,7 @@ export const fetchProducts = unstable_cache(async ({
           },
           take: 1,
           orderBy: {
-            id: 'asc'
+            position:'asc'
           }
         },
       },
@@ -106,7 +106,7 @@ export const fetchProducts = unstable_cache(async ({
   ['fetch-products'],
   {
     tags: ['products'],
-    revalidate: 60 * 60, // Revalidate every hour
+    revalidate: 1, // Revalidate every hour
   }
 )
 
@@ -117,7 +117,7 @@ export const getPriceRange = unstable_cache(async (selectedCategories?: string[]
 
     if (selectedCategories && selectedCategories.length > 0) {
       whereClause.category = {
-        in: selectedCategories
+        in: selectedCategories  
       };
     }
 

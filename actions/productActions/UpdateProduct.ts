@@ -37,76 +37,100 @@ const publicIdFromUrl = (url: string) => {
 }
 
 export const updateProduct = async (payload: UpdatedProduct) => {
-  /* 1. Validate */
-  const parsed = productUpdateSchema.safeParse(payload)
-  if (!parsed.success) return { error: "Invalid fields" }
-  const data = parsed.data
+  try {
+    // 1. Validate input
+    const parsed = productUpdateSchema.safeParse(payload)
+    if (!parsed.success) return { error: "Invalid fields" }
+    const data = parsed.data
 
-  /* 2. Fetch current product with images */
-  const existing = await db.product.findUnique({
-    where: { id: data.id },
-    include: { images: true },
-  })
-  if (!existing) return { error: "Product not found" }
-
-  /* 3. Diff images */
-  const existingIds = new Set(existing.images.map((i) => i.id))
-  const incomingIds = new Set(data.imageUrls.map((i) => i.id))
-
-  const deleteIds = [...existingIds].filter((id) => !incomingIds.has(id))
-  const newFiles = data.image ?? []
-
-  /* 4. Upload newly-added files */
-  const uploadedUrls: string[] = []
-  for (const file of newFiles) {
-    try {
-      uploadedUrls.push(await uploadToCloudinary(file))
-    } catch (err) {
-      console.error("Cloudinary upload error:", err)
-      return { error: "Image upload failed" }
-    }
-  }
-
-  /* 5. Transaction: delete + create + update */
-  await db.$transaction(async (tx) => {
-    /* 5a. Remove deleted image rows (and optionally Cloudinary files) */
-    if (deleteIds.length) {
-      await tx.productImage.deleteMany({ where: { id: { in: deleteIds } } })
-      existing.images
-        .filter((i) => deleteIds.includes(i.id))
-        .forEach((img) => {
-          const pid = publicIdFromUrl(img.imageUrl)
-          if (pid) cloudinary.uploader.destroy(pid).catch(console.error)
-        })
-    }
-
-    /* 5b. Add new image rows */
-    if (uploadedUrls.length) {
-      await tx.productImage.createMany({
-        data: uploadedUrls.map((url) => ({ productId: data.id, imageUrl: url })),
-      })
-    }
-
-    /* 5c. Update scalar product fields */
-    await tx.product.update({
+    // 2. Fetch existing product
+    const existing = await db.product.findUnique({
       where: { id: data.id },
-      data: {
-        name: data.name,
-        description: data.description,
-        price: Number(data.price),
-        category: data.category,
-        stock: Number(data.stock),
-        brand: data.brand,
-        discount: Number(data.discount),
-        slug: data.slug,
-      },
+      include: { images: true },
     })
-  })
+    if (!existing) return { error: "Product not found" }
 
-  /* 6. Revalidate cached pages */
-  revalidateTag("products")
-  revalidateTag("price-range")
-  revalidateTag("fetchCategories")
+    // 3. Diff image lists
+    const existingIds = new Set(existing.images.map((i) => i.id))
+    const incomingIds = new Set(data.imageUrls.map((i) => i.id))
 
-  return { success: "Product updated successfully" }
+    const deleteIds = [...existingIds].filter((id) => !incomingIds.has(id))
+    const newFiles = data.image ?? []
+
+    // 4. Upload new images
+    const uploadedUrls: string[] = []
+    for (const file of newFiles) {
+      try {
+        const url = await uploadToCloudinary(file)
+        uploadedUrls.push(url)
+      } catch (err) {
+        console.error("Cloudinary upload error:", err)
+        return { error: "Image upload failed" }
+      }
+    }
+
+
+    // 5. Perform database transaction
+    try {
+      await db.$transaction(async (tx) => {
+        // 5a. Delete removed images
+        if (deleteIds.length) {
+          await tx.productImage.deleteMany({ where: { id: { in: deleteIds } } })
+
+          for (const img of existing.images.filter((i) => deleteIds.includes(i.id))) {
+            const pid = publicIdFromUrl(img.imageUrl)
+            if (pid) {
+              cloudinary.uploader.destroy(pid).catch((err) => {
+                console.error("Cloudinary deletion failed:", err)
+              })
+            }
+          }
+        }
+
+        // 5b. Add newly uploaded images
+        if (uploadedUrls.length) {
+          await tx.productImage.createMany({
+            data: uploadedUrls.map((url,idx) => ({
+              productId: data.id,
+              imageUrl: url,
+              position:idx
+            })),
+          })
+        }
+
+        // 5c. Update product fields
+        await tx.product.update({
+          where: { id: data.id },
+          data: {
+            name: data.name,
+            description: data.description,
+            price: Number(data.price),
+            category: data.category,
+            stock: Number(data.stock),
+            brand: data.brand,
+            discount: Number(data.discount),
+            slug: data.slug,
+          },
+        })
+      })
+    } catch (err) {
+      console.error("Database transaction failed:", err)
+      return { error: "Failed to update product" }
+    }
+
+    // 6. Revalidate pages
+    try {
+      revalidateTag("products")
+      revalidateTag("price-range")
+      revalidateTag("fetchCategories")
+    } catch (err) {
+      console.warn("Revalidation failed:", err)
+    }
+
+    return { success: "Product updated successfully" }
+
+  } catch (err) {
+    console.error("Unhandled server error:", err)
+    return { error: "Something went wrong while updating the product." }
+  }
 }

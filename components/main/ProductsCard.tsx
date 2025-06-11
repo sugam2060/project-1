@@ -1,29 +1,32 @@
-'use client'
-import { ProductFieldFetchsSchema } from '@/schemas/ProductUploadSchema'
-import Link from 'next/link'
-import React from 'react'
-import { z } from 'zod'
-import Image from 'next/image'
-import PriceView from './PriceView'
-import { usePathname } from 'next/navigation'
-import DeleteProductsButton from './DeleteProductsButton'
-import { motion } from 'motion/react'
-import AddToCartButton from '../RootOnly/AddToCartButton'
-import { cn } from '@/lib/utils'
+"use client";
+import { ProductFieldFetchsSchema } from "@/schemas/ProductUploadSchema";
+import Link from "next/link";
+import React from "react";
+import { z } from "zod";
+import Image from "next/image";
+import PriceView from "./PriceView";
+import { usePathname } from "next/navigation";
+import DeleteProductsButton from "./DeleteProductsButton";
+import { motion } from "motion/react";
+import AddToCartButton from "../RootOnly/AddToCartButton";
+import { cn } from "@/lib/utils";
 
 interface productsCardProps {
-  product: z.infer<typeof ProductFieldFetchsSchema>,
-  className?: string
+  product: z.infer<typeof ProductFieldFetchsSchema>;
+  className?: string;
 }
 
-const ProductsCard = ({ product,className }: productsCardProps) => {
+const ProductsCard = ({ product, className }: productsCardProps) => {
   const pathname = usePathname();
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className={cn("overflow-hidden group min-h-[250px] text-sm border border-zinc-200 rounded-lg bg-white shadow-sm",className)}
+      className={cn(
+        "overflow-hidden group min-h-[250px] text-sm border border-zinc-200 rounded-lg bg-white shadow-sm",
+        className
+      )}
     >
       <div className="bg-gradient-to-r from-zinc-200 via-zinc-300 to-zinc-200 overflow-hidden relative">
         {product.images && (
@@ -37,19 +40,25 @@ const ProductsCard = ({ product,className }: productsCardProps) => {
           >
             <Image
               priority
-              src={
-                new URL(product.images[0].imageUrl).href
-              }
+              src={new URL(product.images[0].imageUrl).href}
               width={500}
               height={500}
               alt="product"
-              className={`w-full aspect-square object-cover transition-transform duration-300 ${product.stock !== 0 && "group-hover:scale-105"
-                }`}
+              className={`w-full aspect-square object-cover transition-transform duration-300 ${
+                product.stock !== 0 && "group-hover:scale-105"
+              }`}
             />
+            {pathname.startsWith("/admin") && product.stock === 0 && (
+              <div className="absolute top-0 left-0 w-full h-full bg-[#151515]/40 flex items-center justify-center">
+                <p className="text-sm sm:text-base text-white font-semibold text-center">
+                  Out of stock
+                </p>
+              </div>
+            )}
           </Link>
         )}
 
-        {product.stock === 0 && (
+        {product.stock === 0 && !pathname.startsWith("/admin") && (
           <div className="absolute top-0 left-0 w-full h-full bg-[#151515]/40 flex items-center justify-center">
             <p className="text-sm sm:text-base text-white font-semibold text-center">
               Out of stock
@@ -59,7 +68,9 @@ const ProductsCard = ({ product,className }: productsCardProps) => {
       </div>
 
       <div className="py-3 px-3 flex flex-col gap-1.5 bg-zinc-50">
-        <h2 className="font-semibold text-sm sm:text-base line-clamp-1">{product.name}</h2>
+        <h2 className="font-semibold text-sm sm:text-base line-clamp-1">
+          {product.name}
+        </h2>
         <p className="text-xs sm:text-sm line-clamp-1">{product.description}</p>
         <PriceView
           price={product.price}
@@ -69,11 +80,11 @@ const ProductsCard = ({ product,className }: productsCardProps) => {
         {pathname.startsWith("/admin") ? (
           <DeleteProductsButton product={product} />
         ) : (
-          <AddToCartButton product={product}/>
+          <AddToCartButton product={product} />
         )}
       </div>
     </motion.div>
   );
 };
 
-export default ProductsCard
+export default ProductsCard;

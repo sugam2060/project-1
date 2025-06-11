@@ -12,10 +12,12 @@ export const fetchSingleProduct = async (slug: string) => {
                     select:{
                         id:true,
                         imageUrl:true
-                    }
+                    },
+                    orderBy:{position:'asc'}
                 }
             }
         })
+        console.log(product)
         return product;
     } catch (error) {
         console.log("Error fetching product:", error);

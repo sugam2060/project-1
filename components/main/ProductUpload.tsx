@@ -12,6 +12,7 @@ import { generateSlug } from '@/lib/generateSlug'
 import { uploadProductsRemote } from '@/actions/productActions/uploadProducts'
 import { Loader2 } from 'lucide-react'
 import ProductCategory from './ProductCategory'
+import { useQueryClient } from '@tanstack/react-query'
 
 
 
@@ -19,6 +20,7 @@ const ProductUpload = () => {
     const [formSuccess, setFormSuccess] = React.useState<string>('')
     const [formError, setFormError] = React.useState<string>('')
     const [isPending, setTransition] = useTransition()
+    const queryClient = useQueryClient()
 
     const form = useForm<z.infer<typeof ProductFieldsSchema>>({
         resolver: zodResolver(ProductFieldsSchema),
@@ -40,6 +42,10 @@ const ProductUpload = () => {
         setFormSuccess('')
         setTransition(() => {
             uploadProductsRemote(data).then((res) => {
+                queryClient.invalidateQueries({
+                    queryKey:['products'],
+                    exact:false
+                })
                 setFormError(res?.error || '')
                 setFormSuccess(res?.success || '')
             })
