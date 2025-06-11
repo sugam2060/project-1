@@ -30,6 +30,7 @@ export const ProductFieldFetchsSchema = z.object({
 });
 
 export const productUpdateSchema = z.object({
+  id:z.string(),
   name: z.string().min(1, "Product name is required"),
   description: z.string().min(1, "Product description is required"),
   price: z.string().min(1).refine(val => !isNaN(parseFloat(val)), "Price must be a number"),

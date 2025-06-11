@@ -7,7 +7,7 @@ const ProductDetailPage = async ({ params }: { params: Promise<{ slug: string }>
 
 
     return (
-        <div>
+        <div className=''>
             <SinglePageGrid slug={slug} />
         </div>
     )

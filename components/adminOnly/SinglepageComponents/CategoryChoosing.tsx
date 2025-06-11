@@ -3,28 +3,29 @@
 import React, { useEffect } from 'react'
 import { UseFormReturn } from 'react-hook-form'
 import { z } from 'zod'
-import { ProductFieldsSchema } from '@/schemas/ProductUploadSchema'
+import {  productUpdateSchema } from '@/schemas/ProductUploadSchema'
 import {
   FormControl,
   FormField,
   FormItem,
   FormLabel,
   FormMessage
-} from '../ui/form'
+} from '@/components/ui/form'
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue
-} from '../ui/select'
-import { ScrollArea } from '../ui/scroll-area'
+} from '@/components/ui/select'
+import { ScrollArea } from '@/components/ui/scroll-area'
 import { fetchRawCategories } from '@/actions/productActions/FetchCategories'
 
-type productUploadType = z.infer<typeof ProductFieldsSchema>
+type productUpdateType = z.infer<typeof productUpdateSchema>
+
 
 interface Props {
-  form: UseFormReturn<productUploadType> 
+  form: UseFormReturn<productUpdateType> 
   isPending: boolean
 }
 
@@ -33,7 +34,7 @@ interface Categories {
   title:string
 }
 
-const ProductCategory = ({ form, isPending }: Props) => {
+const CategoryChoosing = ({ form, isPending }: Props) => {
   const [categories, setCategories] = React.useState<Array<Categories>>([])
   useEffect(() => {
     const fetchcategories = async () => {
@@ -83,4 +84,4 @@ const ProductCategory = ({ form, isPending }: Props) => {
   )
 }
 
-export default ProductCategory
+export default CategoryChoosing

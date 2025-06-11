@@ -1,159 +1,116 @@
-'use client';
+'use client'
 
-import Image from 'next/image';
-import { useEffect, useMemo } from 'react';
-import { useFormContext } from 'react-hook-form';
-import { X } from 'lucide-react'; // or any icon you want
+import Image from 'next/image'
+import { useEffect, useMemo } from 'react'
+import { useFormContext } from 'react-hook-form'
+import { X } from 'lucide-react'
 
-interface ServerImage {
-  id: string;
-  imageUrl: string;
-}
-
-type PreviewImage =
+interface ServerImage { id: string; imageUrl: string }
+type Preview =
   | { id: string; src: string; isLocal: false }
-  | { id: string; src: string; isLocal: true; file: File };
+  | { id: string; src: string; isLocal: true; file: File }
 
-const MAX_IMAGES = 5;
+const MAX = 5
 
 const ImageArray = () => {
-  const { watch, setValue } = useFormContext();
+  const { watch, setValue } = useFormContext()
 
-  // local files (uploaded by user)
-  const localFiles = watch('image') as File[];
+  const local = watch('image') as File[]
+  const remote = watch('imageUrls') as ServerImage[]
 
-  // remote images stored as full objects { id, imageUrl }
-  const remoteImages = watch('imageUrls') as ServerImage[];
-
-  // Build previews for remote images filtered by form's remote images (to sync with deletes)
-  const remotePreviews: PreviewImage[] = useMemo(
+  const remotePrev: Preview[] = useMemo(
+    () => remote.map(i => ({ id: i.id, src: i.imageUrl, isLocal: false })),
+    [remote]
+  )
+  const localPrev: Preview[] = useMemo(
     () =>
-      remoteImages.map((img) => ({
-        id: img.id,
-        src: img.imageUrl,
-        isLocal: false as const,
+      local.map(f => ({
+        id: `local-${f.name}-${f.lastModified}`,
+        src: URL.createObjectURL(f),
+        file: f,
+        isLocal: true,
       })),
-    [remoteImages]
-  );
+    [local]
+  )
 
-  // Build previews for local uploaded files
-  const localPreviews: PreviewImage[] = useMemo(
-    () =>
-      localFiles.map((file) => ({
-        id: `local-${file.name}-${file.lastModified}`,
-        src: URL.createObjectURL(file),
-        file,
-        isLocal: true as const,
-      })),
-    [localFiles]
-  );
+  /* revoke blob URLs */
+  useEffect(() => () => localPrev.forEach(p => URL.revokeObjectURL(p.src)), [localPrev])
 
-  // Revoke object URLs when local previews change to avoid memory leaks
-  useEffect(() => {
-    return () => {
-      localPreviews.forEach((p) => URL.revokeObjectURL(p.src));
-    };
-  }, [localPreviews]);
+  const total = remotePrev.length + localPrev.length
+  const atMax = total >= MAX
+  const previews = [...remotePrev, ...localPrev]
 
-  const totalImagesCount = remotePreviews.length + localPreviews.length;
-  const atMaxImages = totalImagesCount >= MAX_IMAGES;
-  const previews = [...remotePreviews, ...localPreviews];
+  const pickFiles: React.ChangeEventHandler<HTMLInputElement> = e => {
+    if (!e.target.files) return
+    const incoming = Array.from(e.target.files).slice(0, MAX - total)
+    if (incoming.length)
+      setValue('image', [...local, ...incoming], { shouldDirty: true })
+    e.target.value = ''
+  }
 
-  // Handle new uploads, limit total images to MAX_IMAGES
-  const handlePick: React.ChangeEventHandler<HTMLInputElement> = (e) => {
-    if (!e.target.files) return;
+  const removeRemote = (id: string) =>
+    setValue('imageUrls', remote.filter(i => i.id !== id), { shouldDirty: true })
 
-    const incomingFiles = Array.from(e.target.files);
-    const remainingSlots = MAX_IMAGES - totalImagesCount;
-
-    if (remainingSlots <= 0) {
-      e.target.value = '';
-      return;
-    }
-
-    const filesToAdd = incomingFiles.slice(0, remainingSlots);
-
-    setValue('image', [...localFiles, ...filesToAdd], { shouldDirty: true });
-    e.target.value = '';
-  };
-
-  // Remove a remote image by filtering it out from the form's imageUrls
-  const removeRemoteImage = (id: string) => {
-    setValue(
-      'imageUrls',
-      remoteImages.filter((img) => img.id !== id),
-      { shouldDirty: true }
-    );
-  };
-
-  // Remove a local file by filtering it out from the form's image array
-  const removeLocalFile = (file: File) => {
+  const removeLocal = (file: File) =>
     setValue(
       'image',
-      localFiles.filter(
-        (f) => !(f.name === file.name && f.lastModified === file.lastModified)
+      local.filter(
+        f => !(f.name === file.name && f.lastModified === file.lastModified)
       ),
       { shouldDirty: true }
-    );
-  };
+    )
 
   return (
-    <div className="mt-10 px-4">
-      <h2 className="mb-4 text-center text-2xl font-semibold">Images</h2>
+    <div className="pt-2">
+      <h2 className="mb-4 text-center text-xl font-semibold md:text-2xl">
+        Images
+      </h2>
 
-      {/* File picker label */}
+      {/* picker */}
       <label
-        className={`mb-6 flex flex-col items-center justify-center gap-2 rounded-md border border-dashed p-6 text-sm
-          ${atMaxImages ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:bg-gray-50'}`}
+        className={`mb-6 flex flex-col items-center justify-center gap-2 rounded-md border border-dashed p-4 text-sm
+          ${atMax ? 'cursor-not-allowed opacity-50' : 'cursor-pointer hover:bg-muted/50'}`}
       >
-        <span className="font-medium">
-          {atMaxImages ? 'Maximum of 5 images reached' : 'Click or drop images to upload'}
-        </span>
+        {atMax ? 'Max 5 images reached' : 'Click or drop images to upload'}
         <input
           type="file"
           accept="image/*"
           multiple
+          onChange={pickFiles}
+          disabled={atMax}
           className="hidden"
-          onChange={handlePick}
-          disabled={atMaxImages}
         />
       </label>
 
-      {/* Image previews grid */}
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-        {previews.map((preview) => (
+      {/* grid */}
+      <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
+        {previews.map(p => (
           <div
-            key={preview.id}
-            className="relative w-full aspect-[4/3] overflow-hidden rounded-md shadow"
+            key={p.id}
+            className="relative aspect-[4/3] w-full overflow-hidden rounded-md shadow"
           >
-            {/* Delete icon */}
             <button
               type="button"
-              onClick={() =>
-                preview.isLocal
-                  ? removeLocalFile(preview.file)
-                  : removeRemoteImage(preview.id)
-              }
+              aria-label="Remove"
+              onClick={() => (p.isLocal ? removeLocal(p.file) : removeRemote(p.id))}
               className="absolute right-1 top-1 z-10 rounded-full bg-black/60 p-1 text-white hover:bg-black/80"
-              aria-label="Remove image"
             >
               <X className="h-4 w-4" />
             </button>
 
-            {/* Image */}
             <Image
-              src={preview.src}
-              alt={preview.id}
               fill
               className="object-cover"
-              unoptimized={preview.isLocal}
-              sizes="(max-width: 1024px) 100vw, 25vw"
+              sizes="(max-width: 768px) 100vw, 25vw"
+              unoptimized={p.isLocal}
+              src={p.src}
+              alt={p.id}
             />
           </div>
         ))}
       </div>
     </div>
-  );
-};
+  )
+}
 
-export default ImageArray;
+export default ImageArray
