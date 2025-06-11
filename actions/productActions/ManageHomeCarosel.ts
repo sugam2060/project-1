@@ -93,7 +93,7 @@ export const getCaroselImages = async () => {
         images: true
       }
     })
-
+    console.log(imageUrls)
     return imageUrls?.images
   } catch {
     // ignore the error
