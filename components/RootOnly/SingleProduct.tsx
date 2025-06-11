@@ -2,7 +2,15 @@ import { fetchSingleProduct } from '@/actions/productActions/FetchBySlug'
 import React from 'react'
 import ImageView from './ImageView'
 import PriceView from '../main/PriceView'
+import AddToCartButton from './AddToCartButton'
+import { z } from 'zod'
+import { ProductFieldFetchsSchema } from '@/schemas/ProductUploadSchema'
+import AccordianDropDown from './AccordianDropDown'
+import {MailQuestionIcon} from 'lucide-react'
+import ShareButton from './ShareButton'
+import ReviewDialog from './ReviewDialog'
 
+type Product = z.infer<typeof ProductFieldFetchsSchema>
 const SingleProduct = async ({ slug }: { slug: string }) => {
     const product = await fetchSingleProduct(slug)
 
@@ -30,6 +38,20 @@ const SingleProduct = async ({ slug }: { slug: string }) => {
                     )
                     }
                     <p className='text-gray-700'>{product?.description}</p>
+                    <div className='flex items-center gap-5'>
+                        <AddToCartButton product={product as Product}/>
+                        <ReviewDialog/>
+                    </div>
+                    <div className='mb-0'>
+                        <AccordianDropDown product={product as Product}/>
+                    </div>
+                    <div className='grid grid-cols-1 md:grid-cols-3 border-t gap-2'>
+                        <div className='flex min-h-[50px]  items-center gap-2 hover:text-red-500 hoverEffect'>
+                            <MailQuestionIcon className='w-4 h-4'/>
+                            <span className='font-semibold'>Ask a question</span>
+                        </div>
+                        <ShareButton/>
+                    </div>
                 </div>
             </div>
         </div>
