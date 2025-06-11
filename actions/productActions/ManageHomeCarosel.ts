@@ -3,7 +3,7 @@
 import { v2 as cloudinary, UploadApiResponse, } from 'cloudinary';
 import { v4 as uuid4 } from 'uuid'
 import { db } from '@/lib/db';
-import { unstable_cache } from 'next/cache';
+// import { unstable_cache } from 'next/cache';
 import { revalidateTag } from 'next/cache';
 
 interface props {
@@ -86,22 +86,17 @@ export const uploadAndConvertHomeCaroselImages = async ({ images }: props) => {
 
 
 
-export const getCaroselImages = unstable_cache(async () => {
+export const getCaroselImages = async () => {
   try {
     const imageUrls = await db.carosel.findFirst({
       select: {
         images: true
       }
     })
+
     return imageUrls?.images
   } catch {
     // ignore the error
   }
-},
-  ['carosel'],
-  {
-    tags: ['carosel-cache'],
-    revalidate: 1  // never revalidate until manually change
-  }
-)
+}
 
