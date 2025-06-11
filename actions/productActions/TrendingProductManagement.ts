@@ -5,7 +5,7 @@ import { db } from '@/lib/db'
 
 export const fetchTrending = async (productId:string) => {
   try {
-    const result = await db.trendingProduct.findUniqueOrThrow({
+    const result = await db.trendingProduct.findUnique({
     where:{
       productId:productId
     }

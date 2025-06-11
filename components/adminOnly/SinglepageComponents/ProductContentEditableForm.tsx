@@ -10,6 +10,7 @@ import ProductCategory from '@/components/adminOnly/SinglepageComponents/Categor
 import { generateSlug } from '@/lib/generateSlug'
 import Container from '@/components/main/Container'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Textarea } from '@/components/ui/textarea'
 
 type FormData = z.infer<typeof productUpdateSchema>
 
@@ -60,7 +61,7 @@ const ProductContentComponent = () => {
                   <FormItem>
                     <FormLabel>Description</FormLabel>
                     <FormControl>
-                      <Input placeholder="Short product description" {...field} />
+                      <Textarea placeholder="Enter product description" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
