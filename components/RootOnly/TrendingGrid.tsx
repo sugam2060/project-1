@@ -103,7 +103,7 @@ const TrendingGrid: React.FC<TrendingGridProps> = ({ limit }) => {
                             <div
                                 key={trendingProduct.id}
                                 ref={isSecondLast ? ref : undefined}
-                                className="min-w-[280px] max-w-[280px]"
+                                className="min-w-[300px] max-w-[350px]"
                             >
                                 <ProductsCard
                                     product={trendingProduct.product}
