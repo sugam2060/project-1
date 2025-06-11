@@ -38,6 +38,8 @@ const ProductGrid = ({ className, limit,filter }: ProductGridProps) => {
   const [hasNextPage, setHasNextPage] = useState(false);
 
   const skipNextFetch = useRef(false); // 👈 Fix flickering
+    const isFirstLoad = useRef(true); // 👈 only true for first mount
+
 
   useEffect(() => {
   if (filter) {
@@ -59,11 +61,8 @@ const ProductGrid = ({ className, limit,filter }: ProductGridProps) => {
         setAvailablePriceRange(range);
 
         if (priceRange.min < range.min || priceRange.max > range.max) {
-          skipNextFetch.current = true; // 👈 Skip next product fetch
-          setPriceRange({
-            min: range.min,
-            max: range.max
-          });
+          skipNextFetch.current = true;
+          setPriceRange({ min: range.min, max: range.max });
         }
       } catch (error) {
         console.error('Error fetching price range:', error);
@@ -73,42 +72,40 @@ const ProductGrid = ({ className, limit,filter }: ProductGridProps) => {
     fetchAvailablePriceRange();
   }, [selectedCategories]);
 
-  useEffect(() => {
+  const fetchInitialData = useCallback(async () => {
     if (skipNextFetch.current) {
       skipNextFetch.current = false;
       return;
     }
 
-    const fetchInitialData = async () => {
-      setIsLoading(true);
+    setIsLoading(true);
+    try {
+      const productsResult = await fetchProducts({
+        limit: limit as number,
+        selectedCategories: selectedCategories.length > 0 ? selectedCategories : undefined,
+        priceRange:
+          priceRange.min !== availablePriceRange.min || priceRange.max !== availablePriceRange.max
+            ? priceRange
+            : undefined,
+      });
+
+      setAllProducts(productsResult.products || []);
+      setNextCursor(productsResult.nextCursor);
+      setHasNextPage(productsResult.hasNextPage);
+    } catch (error) {
+      console.error('Error fetching products:', error);
       setAllProducts([]);
       setNextCursor(null);
       setHasNextPage(false);
+    } finally {
+      setIsLoading(false);
+      isFirstLoad.current = false;
+    }
+  }, [limit, selectedCategories, priceRange, availablePriceRange]);
 
-      try {
-        const productsResult = await fetchProducts({
-          limit: limit as number,
-          selectedCategories: selectedCategories.length > 0 ? selectedCategories : undefined,
-          priceRange: priceRange.min !== availablePriceRange.min || priceRange.max !== availablePriceRange.max
-            ? priceRange
-            : undefined
-        });
-
-        setAllProducts(productsResult.products || []);
-        setNextCursor(productsResult.nextCursor);
-        setHasNextPage(productsResult.hasNextPage);
-      } catch (error) {
-        console.error('Error fetching products:', error);
-        setAllProducts([]);
-        setNextCursor(null);
-        setHasNextPage(false);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
+  useEffect(() => {
     fetchInitialData();
-  }, [selectedCategories, priceRange, limit, availablePriceRange]);
+  }, [fetchInitialData]);
 
   const loadMoreProducts = useCallback(async () => {
     if (isLoadingMore || !hasNextPage || !nextCursor) return;

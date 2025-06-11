@@ -106,7 +106,7 @@ export const fetchProducts = unstable_cache(async ({
   ['fetch-products'],
   {
     tags: ['products'],
-    revalidate: 60*60, // Revalidate every hour
+    revalidate: 60 * 60, // Revalidate every hour
   }
 )
 
@@ -146,6 +146,6 @@ export const getPriceRange = unstable_cache(async (selectedCategories?: string[]
 ['get-price-range'],
 {
   tags:['price-range'],
-  revalidate: 60*60, // Revalidate every 30 minutes
+  revalidate: 60 * 60, // Revalidate every 30 minutes
 }
 );

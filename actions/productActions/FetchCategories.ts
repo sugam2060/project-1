@@ -3,6 +3,7 @@ import { db } from "@/lib/db";
 import { unstable_cache } from "next/cache";
 
 export const fetchCategories = unstable_cache(async () => {
+    console.log('control')
     try {
         const categories = await db.product.findMany({
             distinct: ['category'],
@@ -18,7 +19,7 @@ export const fetchCategories = unstable_cache(async () => {
     ['fetchCategories'],
     {
         tags: ['fetchCategories'],
-        revalidate: 60 * 60 // 1 hour
+        revalidate: 60 * 60
     }
 )
 

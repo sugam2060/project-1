@@ -36,7 +36,10 @@ export const productUpdateSchema = z.object({
   category: z.string().min(1, "Category is required"),
   discount: z.string().min(0).refine(val => !isNaN(parseFloat(val)), "discount must be a number"),
   image: z.array(z.any()).optional(),
-  imageUrls:z.array(z.string()),
+  imageUrls:z.array(z.object({
+    id:z.string(),
+    imageUrl:z.string()
+  })),
   slug: z.string().min(1, "Slug is required"),
   stock: z.string().min(1).refine(val => !isNaN(parseInt(val)), "Stock must be a number"),
   brand: z.string().optional(),

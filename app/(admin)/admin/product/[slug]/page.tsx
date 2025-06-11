@@ -1,4 +1,5 @@
 
+import SinglePageGrid from '@/components/adminOnly/SinglepageComponents/SinglePageGrid'
 import React from 'react'
 
 const ProductDetailPage = async ({ params }: { params: Promise<{ slug: string }> }) => {
@@ -6,7 +7,9 @@ const ProductDetailPage = async ({ params }: { params: Promise<{ slug: string }>
 
 
     return (
-        <div>{JSON.stringify(slug)}</div>
+        <div>
+            <SinglePageGrid slug={slug} />
+        </div>
     )
 }
 
