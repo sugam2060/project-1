@@ -101,7 +101,7 @@ export const getCaroselImages = unstable_cache(async () => {
   ['carosel'],
   {
     tags: ['carosel-cache'],
-    revalidate: false  // never revalidate until manually change
+    revalidate: 1  // never revalidate until manually change
   }
 )
 
