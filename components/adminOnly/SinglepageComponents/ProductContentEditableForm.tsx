@@ -149,11 +149,6 @@ const ProductContentComponent = () => {
                   </FormItem>
                 )}
               />
-
-              {/* Submit */}
-              <Button type="submit" className="w-full">
-                Set Updated Values to Form
-              </Button>
             </form>
           </Form>
         </CardContent>
