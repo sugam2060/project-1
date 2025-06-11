@@ -16,6 +16,7 @@ import { z } from 'zod'
 import AddToCartButton from '../RootOnly/AddToCartButton'
 import PriceView from './PriceView'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
 
 type Product = z.infer<typeof ProductFieldFetchsSchema>
 
@@ -24,6 +25,8 @@ const Searchbar = () => {
   const [products, setProducts] = React.useState<Array<Product>>([])
   const [loading, setLoading] = React.useState(false)
   const [showSearch, setShowSearch] = React.useState(false)
+
+  const pathname = usePathname()
 
   const fetchProducts = useCallback(async () => {
     if (!search) {
@@ -87,13 +90,13 @@ const Searchbar = () => {
                   products?.map((product: Product) => (
                     <div key={product.id} className='bg-white overflow-hidden border-b last:border-b-0'>
                       <div className='flex flex-col md:flex-row justify-center items-center p-1'>
-                        <Link href={`/products/${product.slug}`} className='h-50 w-[90%] md:h-24 md:w-24 flex-shrink-0 border-[#151515]/20 rounded-md overflow-hidden group' onClick={() => setShowSearch(false)}>
+                        <Link href={pathname.startsWith("/admin") ? `/admin/product/${product.slug}` : `/products/${product.slug}`} className='h-50 w-[90%] md:h-24 md:w-24 flex-shrink-0 border-[#151515]/20 rounded-md overflow-hidden group' onClick={() => setShowSearch(false)}>
                           {product?.images && (
                             <Image src={new URL(product.images[0].imageUrl).href} alt='productProfile' width={200} height={200} className='object-cover w-full h-full group-hover:scale-110 hoverEffect' />
                           )}
                         </Link>
                         <div className='flex-grow px-4 py-2'>
-                          <Link href={`/products/${product.slug}`} onClick={() => setShowSearch(false)}>
+                          <Link href={pathname.startsWith("/admin") ? `/admin/product/${product.slug}` : `/products/${product.slug}`} onClick={() => setShowSearch(false)}>
                             <h3 className='text-sm md:text-lg font-semibold text-gray-800 line-clamp-1'>
                               {product?.name}
                             </h3>
