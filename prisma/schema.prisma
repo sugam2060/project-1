@@ -46,6 +46,8 @@ model User {
   role          UserRole  @default(USER)
 
   accounts Account[]
+  addresses addresses[]
+  orders    Order[]
 }
 
 model Account {
@@ -80,6 +82,7 @@ model Product {
   images      ProductImage[]
 
   trending    TrendingProduct?
+  orderItems  OrderItem[]
 
   @@index([name, id])
   @@index([category, name, id])
@@ -113,4 +116,64 @@ model categories {
 model carosel {
   id String    @id @default(uuid())
   images String[]
+}
+
+model locations {
+  id String @id @default(uuid())
+  city String @unique
+  addresses addresses[]
+}
+
+
+model addresses {
+  id          String   @id @default(uuid())
+  userId      String
+  locationId  String
+  addressLine String
+  postalCode  String?
+  phone       String?
+  user        User     @relation(fields: [userId], references: [id])
+  location    locations @relation(fields: [locationId], references: [id])
+  orders      Order[]
+
+  @@index([userId])
+  @@index([locationId])
+}
+
+model Order {
+  id           String      @id @default(uuid())
+  orderNumber  String      @unique
+  userId       String
+  addressId    String
+  total        Float
+  status       String      @default("pending")
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  user         User        @relation(fields: [userId], references: [id])
+  address      addresses   @relation(fields: [addressId], references: [id])
+  items        OrderItem[]
+
+  @@index([userId])
+  @@index([addressId])
+}
+
+model OrderItem {
+  id          String   @id @default(uuid())
+  orderId     String
+  productId   String
+  quantity    Int
+  price       Float
+  name        String
+  description String
+  category    String
+  brand       String
+  discount    Int
+  imageUrl    String
+  
+  order       Order    @relation(fields: [orderId], references: [id])
+  product     Product  @relation(fields: [productId], references: [id])
+
+  @@index([orderId])
+  @@index([productId])
 }

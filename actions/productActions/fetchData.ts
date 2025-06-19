@@ -92,7 +92,6 @@ export const fetchProducts = unstable_cache(async ({
     const hasNextPage = products.length > limit;
     const items = hasNextPage ? products.slice(0, -1) : products;
     const nextCursor = hasNextPage ? items[items.length - 1]?.id : null;
-
     return {
       products: items,
       nextCursor,
@@ -149,3 +148,78 @@ export const getPriceRange = unstable_cache(async (selectedCategories?: string[]
   revalidate: 60 * 60, // Revalidate every 30 minutes
 }
 );
+
+// Fetch all orders with user, address, and item count for admin
+export const fetchAllOrders = async () => {
+  try {
+    const orders = await db.order.findMany({
+      include: {
+        user: { select: { name: true, email: true } },
+        address: true,
+        items: true,
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+    return orders.map(order => ({
+      ...order,
+      itemsCount: order.items.length,
+    }));
+  } catch (error) {
+    console.error('Error fetching all orders:', error);
+    throw new Error('Failed to fetch orders');
+  }
+};
+
+// Update order status by id
+export const updateOrderStatus = async (orderId: string, status: string) => {
+  try {
+    const updated = await db.order.update({
+      where: { id: orderId },
+      data: { status },
+    });
+    return updated;
+  } catch (error) {
+    console.error('Error updating order status:', error);
+    throw new Error('Failed to update order status');
+  }
+};
+
+// Fetch a single order with all details for order detail page
+export const fetchOrderDetail = async (orderNumber: string) => {
+  try {
+    const order = await db.order.findUnique({
+      where: { orderNumber },
+      include: {
+        user: { select: { name: true, email: true } },
+        address: {
+          include: {
+            location: { select: { city: true } },
+          },
+        },
+        items: {
+          include: {
+            product: {
+              select: {
+                name: true,
+                price: true,
+                images: { select: { imageUrl: true }, orderBy: { position: 'asc' } },
+              },
+            },
+          },
+        },
+      },
+    });
+    if (!order) return null;
+    // Flatten city into address
+    const address = order.address
+      ? {
+          ...order.address,
+          city: order.address.location?.city || "",
+        }
+      : null;
+    return { ...order, address };
+  } catch (error) {
+    console.error('Error fetching order detail:', error);
+    throw new Error('Failed to fetch order detail');
+  }
+};

@@ -3,4 +3,5 @@ export interface Metadata {
   customerName: string;
   customerEmail: string;
   userId: string;
+  addressId: string;
 }

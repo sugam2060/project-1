@@ -2,6 +2,7 @@ import HomeCaroselMgmt from '@/components/adminOnly/HomeCaroselMgmt'
 import PrivateKeyDiv from '@/components/adminOnly/PrivateKeyDiv'
 import Container from '@/components/main/Container'
 import React from 'react'
+import ManageLocations from '@/components/adminOnly/ManageLocations'
 
 const MiscPage = () => {
   return (
@@ -20,6 +21,8 @@ const MiscPage = () => {
         <div className='border-2 rounded-lg pt-5 px-2'>
           <HomeCaroselMgmt/>
         </div>
+        {/* ---------------------------------------- Manage Locations  ---------------------------------------- */}
+        <ManageLocations/>
       </div>
     </Container>
   )

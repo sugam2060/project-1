@@ -84,8 +84,6 @@ export const uploadAndConvertHomeCaroselImages = async ({ images }: props) => {
   }
 }
 
-
-
 export const getCaroselImages = unstable_cache(async () => {
   try {
     const imageUrls = await db.carosel.findFirst({
@@ -93,9 +91,10 @@ export const getCaroselImages = unstable_cache(async () => {
         images: true
       }
     })
-    return imageUrls?.images
+    return imageUrls?.images ?? []
   } catch {
     // ignore the error
+    return []
   }
 },
   ['carosel'],

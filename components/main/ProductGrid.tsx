@@ -80,7 +80,7 @@ export default function ProductGrid({
         max: availablePriceRange.max,
       })
     }
-  }, [availablePriceRange])
+  }, [availablePriceRange, priceRange.min, priceRange.max])
 
   /* ─── products: useInfiniteQuery ─── */
   const {

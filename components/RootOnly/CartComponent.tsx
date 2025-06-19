@@ -21,6 +21,9 @@ import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { useSession } from "next-auth/react";
 import { createCheckoutSession } from "@/actions/productActions/createCheckoutSession";
+import { fetchAddresses } from "@/actions/usersActions/addressActions";
+import { useQuery } from "@tanstack/react-query";
+import AddressSection from "@/components/RootOnly/AddressSection";
 
 const CartComponent = () => {
   const router = useRouter();
@@ -38,9 +41,25 @@ const CartComponent = () => {
     getGroupedItems,
   } = useCartStore();
 
+  const [selectedAddressId, setSelectedAddressId] = useState<string>("");
+  const { data: addresses = [] } = useQuery({
+    queryKey: ["addresses"],
+    queryFn: fetchAddresses,
+  });
+  
+
   useEffect(() => {
     setIsClient(true);
   }, []);
+
+  useEffect(() => {
+    if (addresses.length > 0 && !selectedAddressId) {
+      setSelectedAddressId(addresses[0].id);
+    }
+    if (addresses.length === 0 && selectedAddressId) {
+      setSelectedAddressId("");
+    }
+  }, [addresses, selectedAddressId]);
 
   if (!isClient) {
     return <Loading />;
@@ -69,10 +88,12 @@ const CartComponent = () => {
         customerName: data?.user.name ?? "Unknown",
         customerEmail: data?.user?.email ?? "Unknown",
         userId: data!.user.id,
+        addressId: selectedAddressId,
       };
 
       const checkoutUrl = await createCheckoutSession(cartProducts, metadata);
       if (checkoutUrl) {
+        resetCart()
         router.replace(checkoutUrl);
       }
     } catch (error) {
@@ -271,6 +292,7 @@ const CartComponent = () => {
                     <h2 className="text-lg xl:text-xl font-semibold mb-4">
                       Order Summary
                     </h2>
+                    <AddressSection selectedAddressId={selectedAddressId} setSelectedAddressId={setSelectedAddressId} />
                     <div className="space-y-3 xl:space-y-4">
                       <div className="flex justify-between text-sm xl:text-base">
                         <span>Subtotal</span>
@@ -292,7 +314,7 @@ const CartComponent = () => {
                         />
                       </div>
                       <Button
-                        disabled={loading}
+                        disabled={loading || !selectedAddressId || addresses.length === 0}
                         onClick={handleCheckout}
                         className="w-full rounded-full font-semibold tracking-wide"
                         size="lg"
@@ -307,6 +329,7 @@ const CartComponent = () => {
                 <div className="hidden md:block lg:hidden col-span-1">
                   <div className="bg-white p-4 rounded-lg border">
                     <h2 className="text-lg font-semibold mb-4">Order Summary</h2>
+                    <AddressSection selectedAddressId={selectedAddressId} setSelectedAddressId={setSelectedAddressId} />
                     <div className="space-y-3">
                       <div className="flex justify-between text-sm">
                         <span>Subtotal</span>
@@ -328,7 +351,7 @@ const CartComponent = () => {
                         />
                       </div>
                       <Button
-                        disabled={loading}
+                        disabled={loading || !selectedAddressId || addresses.length === 0}
                         onClick={handleCheckout}
                         className="w-full rounded-full font-semibold tracking-wide"
                         size="lg"
@@ -344,6 +367,7 @@ const CartComponent = () => {
               <div className="md:hidden mt-6 mb-20">
                 <div className="bg-white p-4 rounded-lg border mx-2">
                   <h2 className="text-lg font-semibold mb-4">Order Summary</h2>
+                  <AddressSection selectedAddressId={selectedAddressId} setSelectedAddressId={setSelectedAddressId} />
                   <div className="space-y-3">
                     <div className="flex justify-between text-sm">
                       <span>Subtotal</span>
@@ -365,7 +389,7 @@ const CartComponent = () => {
                       />
                     </div>
                     <Button
-                      disabled={loading}
+                      disabled={loading || !selectedAddressId || addresses.length === 0}
                       onClick={handleCheckout}
                       className="w-full rounded-full font-semibold tracking-wide mt-4"
                       size="lg"
