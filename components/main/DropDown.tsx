@@ -59,6 +59,14 @@ const DropDown = () => {
               </Link>
             )}
 
+            {session?.user.role === 'USER' && (
+              <Link href="/orders">
+                <DropdownMenuItem className="capitalize">
+                  My Orders
+                </DropdownMenuItem>
+              </Link>
+            )}
+
             <DropdownMenuItem
               className="cursor-pointer"
               onClick={() => signOut({ callbackUrl: "/" })}
@@ -73,7 +81,6 @@ const DropDown = () => {
       <ProfileDialog open={profileOpen} onOpenChange={setProfileOpen} />
     </>
   );
-}
+};
 
-
-export default DropDown 
+export default DropDown;
