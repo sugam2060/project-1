@@ -1,11 +1,13 @@
 'use server'
 import { db } from "@/lib/db";
 import { unstable_cache } from 'next/cache'
+import { orderStatusType } from "@/schemas/OrderStatusType";
 
 interface PriceRange {
   min: number;
   max: number;
 }
+
 
 export const fetchProducts = unstable_cache(async ({
   limit,
@@ -171,7 +173,7 @@ export const fetchAllOrders = async () => {
 };
 
 // Update order status by id
-export const updateOrderStatus = async (orderId: string, status: string) => {
+export const updateOrderStatus = async (orderId: string, status: orderStatusType) => {
   try {
     const updated = await db.order.update({
       where: { id: orderId },
@@ -221,5 +223,101 @@ export const fetchOrderDetail = async (orderNumber: string) => {
   } catch (error) {
     console.error('Error fetching order detail:', error);
     throw new Error('Failed to fetch order detail');
+  }
+};
+
+// Fetch orders for a specific user
+export const fetchOrdersByUser = async (userId: string) => {
+  try {
+    const orders = await db.order.findMany({
+      where: { userId },
+      include: {
+        user: { select: { name: true, email: true } },
+        address: {
+          include: {
+            location: { select: { city: true } },
+          },
+        },
+        items: {
+          include: {
+            product: {
+              select: {
+                name: true,
+                price: true,
+                images: { select: { imageUrl: true }, orderBy: { position: 'asc' } },
+              },
+            },
+          },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+    return orders.map(order => ({
+      ...order,
+      address: order.address ? { ...order.address, city: order.address.location?.city || "" } : null,
+      itemsCount: order.items.length,
+    }));
+  } catch (error) {
+    console.error('Error fetching user orders:', error);
+    throw new Error('Failed to fetch user orders');
+  }
+};
+
+export const fetchOrdersPaginated = async ({
+  limit,
+  cursor,
+  status,
+}: {
+  limit: number;
+  cursor?: { createdAt: string; id: string };
+  status?: string;
+}) => {
+  try {
+    const where: any = {};
+    if (status && status !== "all") {
+      where.status = status;
+    }
+    if (cursor) {
+      where.OR = [
+        { createdAt: { lt: new Date(cursor.createdAt) } },
+        {
+          createdAt: new Date(cursor.createdAt),
+          id: { lt: cursor.id },
+        },
+      ];
+    }
+
+    const orders = await db.order.findMany({
+      take: limit + 1,
+      where,
+      orderBy: [{ createdAt: 'desc' }, { id: 'desc' }],
+      include: {
+        user: { select: { name: true, email: true } },
+        address: true,
+        items: true,
+      },
+    });
+
+    const hasNextPage = orders.length > limit;
+    const items = hasNextPage ? orders.slice(0, -1) : orders;
+    const nextCursor = hasNextPage
+      ? {
+          createdAt: items[items.length - 1].createdAt.toISOString(),
+          id: items[items.length - 1].id,
+        }
+      : null;
+
+    return {
+      orders: items.map(order => ({
+        ...order,
+        createdAt: order.createdAt.toISOString(),
+        itemsCount: order.items.length,
+      })),
+      nextCursor,
+      hasNextPage,
+    };
+  } catch (error) {
+    console.error('Error fetching paginated orders:', error);
+    throw new Error('Failed to fetch orders');
   }
 };

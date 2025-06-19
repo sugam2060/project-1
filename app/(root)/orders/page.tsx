@@ -1,5 +1,6 @@
 import React from 'react'
 import type { Metadata } from 'next'
+import Myorders from '@/components/RootOnly/Myorders'
 
 export const metadata: Metadata = {
   title: "My Orders",
@@ -8,7 +9,7 @@ export const metadata: Metadata = {
 
 const OrderPage = async () => {
   return (
-    <div>OrderPage</div>
+    <Myorders/>
   )
 }
 

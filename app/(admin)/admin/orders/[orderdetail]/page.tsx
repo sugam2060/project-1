@@ -8,6 +8,7 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import Image from "next/image";
 import clsx from "clsx";
 import Head from "next/head";
+import Container from "@/components/main/Container";
 
 type OrderDetail = {
   id: string;
@@ -79,7 +80,7 @@ const OrderDetailPage: FC = () => {
         <meta name="description" content={`Details for order ${order.orderNumber}`} />
       </Head>
 
-      <div className="max-w-6xl mx-auto p-4 md:p-6 space-y-6 font-sans">
+      <Container className="my-5 space-y-5">
         <div className="flex justify-between items-center">
           <Link href="/admin/orders" className="text-blue-600 underline text-sm">
             &larr; Back to Orders
@@ -179,7 +180,7 @@ const OrderDetailPage: FC = () => {
             </div>
           </CardContent>
         </Card>
-      </div>
+      </Container>
     </>
   );
 };

@@ -48,7 +48,7 @@ export async function createCheckoutSession(
     });
 
     // Optionally, redirect to a confirmation page or return order id
-    return `/products`;
+    return `/orders`;
   } catch (error) {
     console.error("Error creating checkout session:", error);
     throw error;

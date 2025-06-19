@@ -15,7 +15,7 @@ const Loading = () => {
         >
           <Loader2 className=" animate-spin" />
           <span className="font-semibold tracking-wide">
-            Tulos is loading...
+            loading...
           </span>
         </motion.div>
       </div>
