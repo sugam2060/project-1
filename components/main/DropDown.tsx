@@ -59,7 +59,7 @@ const DropDown = () => {
               </Link>
             )}
 
-            {session?.user.role === 'USER' && (
+            {session?.user.role === 'USER' || session?.user.role === 'ADMIN' && (
               <Link href="/orders">
                 <DropdownMenuItem className="capitalize">
                   My Orders
