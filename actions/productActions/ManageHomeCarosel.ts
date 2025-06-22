@@ -30,7 +30,6 @@ export const uploadAndConvertHomeCaroselImages = async ({ images }: props) => {
 
   if (existingImageCount! >= 5) return { error: 'Only 5 images can be uploaded' }
   if ((existingImageCount! + images.length) > 5) return { error: 'Only 5 images can be uploaded' }
-  console.log(existingImageCount)
 
   const ImageUrls = []
   for (const image of images) {

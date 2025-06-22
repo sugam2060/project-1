@@ -4,6 +4,7 @@ import Container from '@/components/main/Container'
 import React from 'react'
 import ManageLocations from '@/components/adminOnly/ManageLocations'
 import AdminRevocation from '@/components/adminOnly/AdminRevocation'
+import RecentInteriorProjectsMgmt from '@/components/adminOnly/RecentInteriorProjectsMgmt'
 
 const MiscPage = () => {
   return (
@@ -24,6 +25,10 @@ const MiscPage = () => {
         </div>
         {/* ---------------------------------------- Manage Locations  ---------------------------------------- */}
         <ManageLocations/>
+        <div className='border-2 rounded-lg pt-5 px-2'>
+        {/* Recent Interior Projects Image Upload Component */}
+        <RecentInteriorProjectsMgmt />
+        </div>
       </div>
     </Container>
   )

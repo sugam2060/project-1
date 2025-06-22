@@ -94,7 +94,7 @@ model ProductImage {
   id        String   @id @default(uuid())
   productId String
   imageUrl  String
-  product   Product  @relation(fields: [productId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id],onDelete: Cascade)
   position Int
   @@index([productId])
 }
@@ -103,7 +103,7 @@ model TrendingProduct {
   id        String   @id @default(uuid())
   productId String   @unique
   addedAt   DateTime @default(now()) // optional: to track when it started trending
-  product   Product  @relation(fields: [productId], references: [id])
+  product   Product  @relation(fields: [productId], references: [id],onDelete: Cascade)
 }
 
 
@@ -172,8 +172,13 @@ model OrderItem {
   imageUrl    String
   
   order       Order    @relation(fields: [orderId], references: [id])
-  product     Product  @relation(fields: [productId], references: [id])
+  product     Product  @relation(fields: [productId], references: [id],onDelete: Cascade)
 
   @@index([orderId])
   @@index([productId])
+}
+
+model RecentInteriorProjectImage {
+  id        String   @id @default(uuid())
+  imageUrl  String[]
 }
