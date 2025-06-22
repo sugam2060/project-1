@@ -56,6 +56,28 @@ export default function MyOrders() {
     createdAt: typeof order.createdAt === "string" ? order.createdAt : order.createdAt.toISOString(),
   }));
 
+  // Determine sticky note message
+  let stickyMessage = null;
+  if (orders.length > 0) {
+    const hasProcessing = orders.some((o) => o.status === "processing");
+    const hasPending = orders.some((o) => o.status === "pending");
+    const hasShipped = orders.some((o) => o.status === 'shipped')
+    const hasDelivered = orders.some((o) => o.status === 'delivered')
+    if (hasProcessing) {
+      stickyMessage =
+"Your order is being processed. Payment details have been sent to your email. Once payment is confirmed, your items will be prepared for shipping."    } else if (hasPending) {
+      stickyMessage =
+        "We have received your order! We will contact you soon for order confirmation."
+    }else if (hasShipped){
+      stickyMessage = "Great news! Your payment has been received and your order has been shipped. It will be with you soon."
+    }else if(hasDelivered){
+      stickyMessage = "Your order has been delivered! We hope you enjoy your purchase. Thank you for shopping with us."
+    }
+    else{
+      stickyMessage = "This order has been cancelled. If you have questions, please contact our support team."
+    }
+  }
+
   if (status === "loading" || isLoading) return <Loading />;
   if (!userId)
     return (
@@ -80,10 +102,16 @@ export default function MyOrders() {
   };
 
   return (
-    <Container>
-      <h1 className="text-2xl sm:text-3xl font-bold mb-6 text-center">
+    <Container className="min-h-[500px]">
+      <h1 className="text-2xl sm:text-3xl font-bold my-6 text-center">
         My Orders
       </h1>
+
+      {stickyMessage && (
+        <div className="sticky top-2 z-10 mb-6 mx-auto max-w-2xl bg-yellow-50 border-l-4 border-yellow-400 text-yellow-900 px-6 py-4 rounded shadow-sm text-center font-medium">
+          {stickyMessage}
+        </div>
+      )}
 
       {orders.length === 0 ? (
         <div className="text-center text-gray-500">You have no orders yet.</div>

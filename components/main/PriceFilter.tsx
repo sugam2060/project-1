@@ -163,8 +163,8 @@ const PriceFilter = ({
                 />
               </div>
               <div className="flex justify-between text-xs text-muted-foreground">
-                <span>${localPriceRange.min}</span>
-                <span>${localPriceRange.max}</span>
+                <span>Rs. {localPriceRange.min}</span>
+                <span>Rs. {localPriceRange.max}</span>
               </div>
             </div>
 

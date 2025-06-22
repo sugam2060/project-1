@@ -3,6 +3,7 @@ import PrivateKeyDiv from '@/components/adminOnly/PrivateKeyDiv'
 import Container from '@/components/main/Container'
 import React from 'react'
 import ManageLocations from '@/components/adminOnly/ManageLocations'
+import AdminRevocation from '@/components/adminOnly/AdminRevocation'
 
 const MiscPage = () => {
   return (
@@ -15,7 +16,7 @@ const MiscPage = () => {
         </div>
         {/* ---------------------------------------- Employee delete/create  ---------------------------------------- */}
         <div>
-
+          <AdminRevocation/>
         </div>
         {/* ---------------------------------------- Manage Home carosel Images  ---------------------------------------- */}
         <div className='border-2 rounded-lg pt-5 px-2'>

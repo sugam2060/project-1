@@ -1,6 +1,6 @@
 "use client";
 import React, { useCallback } from "react";
-import { updateOrderStatus, fetchOrdersPaginated } from "@/actions/productActions/fetchData";
+import { updateOrderStatus, fetchOrdersPaginated, deleteOrderWithItems } from "@/actions/productActions/fetchData";
 import Link from "next/link";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -9,7 +9,7 @@ import Container from "@/components/main/Container";
 import { orderStatusType } from "@/schemas/OrderStatusType";
 import { useInfiniteQuery, useQueryClient, InfiniteData } from "@tanstack/react-query";
 import { useInView } from "react-intersection-observer";
-import { Loader } from "lucide-react";
+import { Loader, Trash } from "lucide-react";
 
 const statusOptions: orderStatusType[] = ["pending", "processing", "shipped", "delivered", "cancelled"];
 
@@ -50,6 +50,7 @@ const LIMIT = 10;
 
 const OrdersPage = () => {
   const [updating, setUpdating] = React.useState("");
+  const [deleting, setDeleting] = React.useState<string>("");
   const queryClient = useQueryClient();
   const [statusFilter, setStatusFilter] = React.useState<string>("all");
 
@@ -98,6 +99,13 @@ const OrdersPage = () => {
     setUpdating("");
   }, [queryClient]);
 
+  const handleDeleteOrder = useCallback(async (orderId: string) => {
+    setDeleting(orderId);
+    await deleteOrderWithItems(orderId);
+    await queryClient.invalidateQueries({ queryKey: ["admin-orders"] });
+    setDeleting("");
+  }, [queryClient]);
+
   return (
     <Container className="my-2">
       <h1 className="text-2xl md:text-3xl font-bold mb-6">All Orders</h1>
@@ -140,20 +148,27 @@ const OrdersPage = () => {
                     <div><b>Total:</b> NPR {order.total.toFixed(2)}</div>
                     <div className="flex flex-col">
                       <label className="font-medium text-sm">Status:</label>
-                      <select
-                        value={order.status}
-                        onChange={(e) => handleStatusChange(order.id, e.target.value)}
-                        disabled={updating === order.id || order.status === 'cancelled'}
-                        className={cn(
-                          'border rounded px-2 py-1 mt-1',
-                          order.status === 'cancelled' && 'bg-red-500 text-white',
-                          updating === order.id && 'bg-gray-100 text-gray-500'
+                      <div className="flex flex-row items-center gap-2 mt-1">
+                        <select
+                          value={order.status}
+                          onChange={(e) => handleStatusChange(order.id, e.target.value)}
+                          disabled={updating === order.id || order.status === 'cancelled'}
+                          className={cn(
+                            'border rounded px-2 py-1',
+                            order.status === 'cancelled' && 'bg-red-500 text-white',
+                            updating === order.id && 'bg-gray-100 text-gray-500'
+                          )}
+                        >
+                          {statusOptions.map((opt) => (
+                            <option key={opt} value={opt}>{opt}</option>
+                          ))}
+                        </select>
+                        {order.status === 'cancelled' && (
+                          <button onClick={() => handleDeleteOrder(order.id)} disabled={deleting === order.id} className="ml-2 text-red-500 hover:text-red-700">
+                            {deleting === order.id ? <Loader className="w-4 h-4 animate-spin" /> : <Trash className="w-4 h-4" />}
+                          </button>
                         )}
-                      >
-                        {statusOptions.map((opt) => (
-                          <option key={opt} value={opt}>{opt}</option>
-                        ))}
-                      </select>
+                      </div>
                       {updating === order.id && (
                         <span className="text-xs text-blue-600 mt-1">Updating...</span>
                       )}
@@ -208,20 +223,27 @@ const OrdersPage = () => {
                           <td className="p-3 border">{order.address?.addressLine || "N/A"}</td>
                           <td className="p-3 border">NPR {order.total.toFixed(2)}</td>
                           <td className="p-3 border">
-                            <select
-                              value={order.status}
-                              onChange={(e) => handleStatusChange(order.id, e.target.value)}
-                              disabled={updating === order.id || order.status === 'cancelled'}
-                              className={cn(
-                                'border rounded px-2 py-1',
-                                order.status === 'cancelled' && 'bg-red-500 text-white',
-                                updating === order.id && 'bg-gray-100 text-gray-500'
+                            <div className="flex flex-row items-center gap-2">
+                              <select
+                                value={order.status}
+                                onChange={(e) => handleStatusChange(order.id, e.target.value)}
+                                disabled={updating === order.id || order.status === 'cancelled'}
+                                className={cn(
+                                  'border rounded px-2 py-1',
+                                  order.status === 'cancelled' && 'bg-red-500 text-white',
+                                  updating === order.id && 'bg-gray-100 text-gray-500'
+                                )}
+                              >
+                                {statusOptions.map((opt) => (
+                                  <option key={opt} value={opt}>{opt}</option>
+                                ))}
+                              </select>
+                              {order.status === 'cancelled' && (
+                                <button onClick={() => handleDeleteOrder(order.id)} disabled={deleting === order.id} className="ml-2 text-red-500 hover:text-red-700">
+                                  {deleting === order.id ? <Loader className="w-4 h-4 animate-spin" /> : <Trash className="w-4 h-4" />}
+                                </button>
                               )}
-                            >
-                              {statusOptions.map((opt) => (
-                                <option key={opt} value={opt}>{opt}</option>
-                              ))}
-                            </select>
+                            </div>
                             {updating === order.id && (
                               <div className="text-xs text-blue-500 mt-1">Updating...</div>
                             )}

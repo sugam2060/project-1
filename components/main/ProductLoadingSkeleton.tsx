@@ -1,24 +1,48 @@
 import React from 'react'
 import { Skeleton } from '../ui/skeleton'
-import { cn } from '@/lib/utils';
+import { cn } from '@/lib/utils'
 
-const ProductLoadingSkeleton = ({length,className,InnerClass}:{length:number,className?:string,InnerClass?:string}) => {
-    const array = Array.from({ length }, (_, index) => index + 1);
-    return (
-        <div className={cn('',className)}>
-            {array.map((_, idx) => (
-                <div
-                    key={idx}
-                    className={cn("bg-black/10 w-full h-96 rounded-md flex flex-col gap-2", InnerClass)}
-                >
-                    <Skeleton className="h-76 bg-gray-400 rounded-br-none rounded-bl-none" />
-                    <Skeleton className="h-5 mx-2 bg-gray-400" />
-                    <Skeleton className="h-10 mx-2 bg-gray-400" />
-                </div>
-            ))}
+interface ProductLoadingSkeletonProps {
+  length: number
+  className?: string
+  InnerClass?: string
+}
+
+const ProductLoadingSkeleton = ({
+  length,
+  className,
+  InnerClass
+}: ProductLoadingSkeletonProps) => {
+  const placeholders = Array.from({ length })
+
+  return (
+    <div
+      className={cn(
+        'grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6',
+        className
+      )}
+    >
+      {placeholders.map((_, idx) => (
+        <div
+          key={idx}
+          className={cn(
+            'rounded-xl border border-gray-200 bg-white shadow-sm overflow-hidden flex flex-col animate-pulse',
+            InnerClass
+          )}
+        >
+          {/* Image area */}
+          <Skeleton className="h-48 w-full bg-gray-200" />
+
+          {/* Content area */}
+          <div className="p-4 space-y-3">
+            <Skeleton className="h-4 w-3/4 bg-gray-200" />
+            <Skeleton className="h-4 w-1/2 bg-gray-200" />
+            <Skeleton className="h-10 w-full bg-gray-300 rounded-md mt-4" />
+          </div>
         </div>
-    );
-};
-
+      ))}
+    </div>
+  )
+}
 
 export default ProductLoadingSkeleton

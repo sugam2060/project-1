@@ -1,62 +1,84 @@
+'use client'
+
 import React from 'react'
-import { TooltipProvider, Tooltip, TooltipTrigger } from '@/components/ui/tooltip'
 import Link from 'next/link'
-import { Facebook, Github, Instagram, Linkedin } from 'lucide-react'
-import { TooltipContent } from '@radix-ui/react-tooltip'
+import { Facebook, Instagram, Linkedin } from 'lucide-react'
+import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
-interface props {
-    className?: string
-    iconClassName?: string
-    tooptipClassName?: string
+import {FaTiktok} from 'react-icons/fa'
+
+interface Props {
+  className?: string
+  iconClassName?: string
+  tooptipClassName?: string
 }
 
 const socialLinks = [
-    {
-        title: 'Github',
-        href: 'https://github.com/adrianhajdin/yc_directory/tree/main',
-        icons: <Github className='w-5 h-5' />
-    },
-    {
-        title: 'Facebook',
-        href: 'https://www.facebook.com/',
-        icons: <Facebook className='w-5 h-5' />
-    },
-    {
-        title: 'Linkedin',
-        href: 'https://www.linkedin.com/in/sugam-pudasain-843912247/',
-        icons: <Linkedin className='w-5 h-5' />
-    },
-    {
-        title: 'instagram',
-        href: 'https://www.instagram.com/',
-        icons: <Instagram className='w-5 h-5' />
-    }
+  {
+    title: 'Tiktok',
+    href: 'https://github.com/adrianhajdin/yc_directory/tree/main',
+    icon: <FaTiktok className="w-5 h-5 text-[#010101] group-hover:text-[#69C9D0]" />,
+    color: 'hover:bg-[#69C9D0]/10',
+  },
+  {
+    title: 'Facebook',
+    href: 'https://www.facebook.com/',
+    icon: <Facebook className="w-5 h-5 text-[#1877F3] group-hover:text-[#145db2]" />,
+    color: 'hover:bg-[#1877F3]/10',
+  },
+  {
+    title: 'LinkedIn',
+    href: 'https://www.linkedin.com/in/sugam-pudasain-843912247/',
+    icon: <Linkedin className="w-5 h-5 text-[#0A66C2] group-hover:text-[#004182]" />,
+    color: 'hover:bg-[#0A66C2]/10',
+  },
+  {
+    title: 'Instagram',
+    href: 'https://www.instagram.com/',
+    icon: <Instagram className="w-5 h-5 text-[#E1306C] group-hover:text-[#C13584]" />,
+    color: 'hover:bg-[#E1306C]/10',
+  }
 ]
 
-const SocialMedia = ({ className, iconClassName, tooptipClassName }: props) => {
-    return (
-        <TooltipProvider>
-
-            <div className={cn('flex items-center gap-3.5', className)}>
-                {socialLinks.map((item) => (
-                    <Tooltip key={item.title}>
-                        <TooltipTrigger asChild>
-                            <Link href={item.href} className={cn('p-2 border rounded-full hover:text-white hover:border-white hoverEffect', iconClassName)}>
-                                {item.icons}
-                            </Link>
-                        </TooltipTrigger>
-                        <TooltipContent className={cn('p-1 text-[#151515] rounded-sm text-xs bg-white font-semibold', tooptipClassName)}>
-                            {item.title}
-                        </TooltipContent>
-                    </Tooltip>
-                ))}
-
-            </div>
-
-        </TooltipProvider>
-
-
-    )
+const SocialMedia: React.FC<Props> = ({
+  className,
+  iconClassName,
+  tooptipClassName
+}) => {
+  return (
+    <TooltipProvider>
+      <div className={cn('flex items-center gap-4', className)}>
+        {socialLinks.map((item) => (
+          <Tooltip key={item.title}>
+            <TooltipTrigger asChild>
+              <Link
+                href={item.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label={item.title}
+                className={cn(
+                  'p-2 border border-gray-300 rounded-full transition-colors group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400',
+                  item.color,
+                  iconClassName
+                )}
+              >
+                {item.icon}
+              </Link>
+            </TooltipTrigger>
+            <TooltipContent
+              side="top"
+              className={cn(
+                'bg-white text-xs font-medium text-[#151515] px-2 py-1 border rounded shadow-sm',
+                tooptipClassName
+              )}
+            >
+              {item.title}
+            </TooltipContent>
+          </Tooltip>
+        ))}
+      </div>
+    </TooltipProvider>
+  )
 }
 
 export default SocialMedia

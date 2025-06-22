@@ -2,6 +2,7 @@ import RootFooter from '@/components/main/Footer'
 import Header from '@/components/main/Header'
 import { SessionProvider } from 'next-auth/react'
 import React from 'react'
+import ContactSticky from '@/components/main/ContactSticky'
 
 const layout = ({children}:{children:React.ReactNode}) => {
   return (
@@ -9,6 +10,7 @@ const layout = ({children}:{children:React.ReactNode}) => {
       <SessionProvider>
         <Header/>
         {children}
+        <ContactSticky/>
       <RootFooter/>
       </SessionProvider>
     </main>

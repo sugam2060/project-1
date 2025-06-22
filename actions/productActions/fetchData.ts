@@ -321,3 +321,17 @@ export const fetchOrdersPaginated = async ({
     throw new Error('Failed to fetch orders');
   }
 };
+
+// Delete an order and all its order items
+export const deleteOrderWithItems = async (orderId: string) => {
+  try {
+    await db.$transaction([
+      db.orderItem.deleteMany({ where: { orderId } }),
+      db.order.delete({ where: { id: orderId } })
+    ]);
+    return { success: true };
+  } catch (error) {
+    console.error('Error deleting order and items:', error);
+    return { error: 'Failed to delete order.' };
+  }
+};

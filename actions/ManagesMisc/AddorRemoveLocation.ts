@@ -23,16 +23,21 @@ export async function AddLocation(city: string) {
 
 export async function DeleteLocation(id: string) {
   try {
+    // Check if any addresses reference this location
+    const addressCount = await db.addresses.count({ where: { locationId: id } });
+    if (addressCount > 0) {
+      return { error: 'Cannot delete location: it is still in use by one or more addresses.' };
+    }
     await db.locations.delete({ where: { id } });
     // Revalidate cache
     // @ts-ignore
-    revalidateTag('locations')
+    revalidateTag('locations');
     return { success: true };
   } catch (error: any) {
     if (error.code === 'P2025') {
-      // Not found
       return { error: 'Location not found or already deleted.' };
     }
+    console.log(error);
     return { error: 'Failed to delete location.' };
   }
 }
