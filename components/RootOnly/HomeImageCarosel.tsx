@@ -16,7 +16,6 @@ const HomeImageCarosel = () => {
     const fetchFiles = async () => {
       const fetchedImages = await getCaroselImages();
 
-      console.log(fetchedImages);
 
       if (Array.isArray(fetchedImages) && fetchedImages.length > 0) {
         setImages(fetchedImages);

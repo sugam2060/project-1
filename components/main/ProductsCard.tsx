@@ -88,7 +88,6 @@ const ProductsCard = ({
       >
         {imageUrl ? (
           <Image
-            priority
             src={imageUrl}
             width={500}
             height={500}

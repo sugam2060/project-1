@@ -67,10 +67,9 @@ const ImageTitleCard: React.FC<CardProps> = ({ categoriesData, className }) => {
                 isLoading ? "opacity-0" : "opacity-100",
                 "group-hover:scale-105"
               )}
-              onLoadingComplete={() => setIsLoading(false)}
+              onLoad={() => setIsLoading(false)}
               placeholder="blur"
               blurDataURL="/images/placeholder.png" // optional
-              priority
               sizes="(max-width: 640px) 100vw, 300px"
             />
           </>

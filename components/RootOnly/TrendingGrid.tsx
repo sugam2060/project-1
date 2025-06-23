@@ -110,7 +110,7 @@ const TrendingGrid: React.FC<TrendingGridProps> = ({ limit }) => {
         Trending Products
       </h2>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <div className="grid mx-auto grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {products.map((item, idx) => {
           const isSecondLast = idx === products.length - 2;
 
@@ -118,13 +118,13 @@ const TrendingGrid: React.FC<TrendingGridProps> = ({ limit }) => {
             <div
               key={`${item.id}-${item.product.slug}`}
               ref={isSecondLast ? ref : undefined}
-              className="min-h-[100px] mx-auto  max-w-full"
+              className="w-full h-[360px]"
             >
               <ProductsCard
                 product={item.product}
-                className="rounded-2xl shadow-md h-full"
-                imageClassName="rounded-t-2xl h-48 object-cover"
-                contentClassName="p-3 rounded-b-2xl bg-white"
+                className="rounded-2xl shadow-md h-full w-full flex flex-col"
+                imageClassName="rounded-t-2xl h-48 object-cover w-full"
+                contentClassName="p-3 rounded-b-2xl bg-white flex-1"
               />
             </div>
           );

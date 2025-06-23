@@ -13,8 +13,27 @@ export async function createCheckoutSession(
   metadata: Metadata
 ) {
   try {
-    console.log(metadata,items);
+    console.log("Checkout session data:", { metadata, items });
     
+    // Validate that all products exist
+    const productIds = items.map(item => item.product.id);
+    const existingProducts = await db.product.findMany({
+      where: {
+        id: {
+          in: productIds
+        }
+      }
+    });
+
+    // Check if any products are missing
+    const foundProductIds = existingProducts.map(p => p.id);
+    const missingProductIds = productIds.filter(id => !foundProductIds.includes(id));
+    
+    if (missingProductIds.length > 0) {
+      console.error("Missing products:", missingProductIds);
+      throw new Error(`Some products no longer exist: ${missingProductIds.join(", ")}`);
+    }
+
     // Calculate total
     const total = items.reduce((sum, item) => {
       const price = item.product.price;

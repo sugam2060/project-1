@@ -49,32 +49,37 @@ export default function MyOrders() {
     enabled: !!userId,
   });
 
-  // Map orders to OrderListType for type safety
   const orders = (ordersRaw || []).map((order) => ({
     ...order,
     status: order.status as orderStatusType,
-    createdAt: typeof order.createdAt === "string" ? order.createdAt : order.createdAt.toISOString(),
+    createdAt:
+      typeof order.createdAt === "string"
+        ? order.createdAt
+        : order.createdAt.toISOString(),
   }));
 
-  // Determine sticky note message
   let stickyMessage = null;
   if (orders.length > 0) {
     const hasProcessing = orders.some((o) => o.status === "processing");
     const hasPending = orders.some((o) => o.status === "pending");
-    const hasShipped = orders.some((o) => o.status === 'shipped')
-    const hasDelivered = orders.some((o) => o.status === 'delivered')
+    const hasShipped = orders.some((o) => o.status === "shipped");
+    const hasDelivered = orders.some((o) => o.status === "delivered");
+
     if (hasProcessing) {
       stickyMessage =
-"Your order is being processed. Payment details have been sent to your email. Once payment is confirmed, your items will be prepared for shipping."    } else if (hasPending) {
+        "Your order is being processed. Payment details have been sent to your email. Once payment is confirmed, your items will be prepared for shipping.";
+    } else if (hasPending) {
       stickyMessage =
-        "We have received your order! We will contact you soon for order confirmation."
-    }else if (hasShipped){
-      stickyMessage = "Great news! Your payment has been received and your order has been shipped. It will be with you soon."
-    }else if(hasDelivered){
-      stickyMessage = "Your order has been delivered! We hope you enjoy your purchase. Thank you for shopping with us."
-    }
-    else{
-      stickyMessage = "This order has been cancelled. If you have questions, please contact our support team."
+        "We have received your order! We will contact you soon for order confirmation.";
+    } else if (hasShipped) {
+      stickyMessage =
+        "Great news! Your payment has been received and your order has been shipped. It will be with you soon.";
+    } else if (hasDelivered) {
+      stickyMessage =
+        "Your order has been delivered! We hope you enjoy your purchase. Thank you for shopping with us.";
+    } else {
+      stickyMessage =
+        "This order has been cancelled. If you have questions, please contact our support team.";
     }
   }
 
@@ -88,10 +93,10 @@ export default function MyOrders() {
       <div className="p-6 text-center text-red-500">Failed to load orders.</div>
     );
 
-  const handleCancellation = async (orderId:string) => {
+  const handleCancellation = async (orderId: string) => {
     setCancellingId(orderId);
     try {
-      await updateOrderStatus(orderId,'cancelled');
+      await updateOrderStatus(orderId, "cancelled");
       toast.success("Order cancelled successfully.");
       refetch();
     } catch {
@@ -102,7 +107,7 @@ export default function MyOrders() {
   };
 
   return (
-    <Container className="min-h-[500px]">
+    <Container className="min-h-[500px] px-4 sm:px-6 lg:px-8">
       <h1 className="text-2xl sm:text-3xl font-bold my-6 text-center">
         My Orders
       </h1>
@@ -114,12 +119,17 @@ export default function MyOrders() {
       )}
 
       {orders.length === 0 ? (
-        <div className="text-center text-gray-500">You have no orders yet.</div>
+        <div className="text-center text-gray-500">
+          You have no orders yet.
+        </div>
       ) : (
         <div className="space-y-6">
           {orders.map((order) => (
-            <Card key={order.id} className="shadow-md border border-gray-200">
-              <CardHeader className="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
+            <Card
+              key={order.id}
+              className="shadow-md border border-gray-200 overflow-hidden"
+            >
+              <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                 <div>
                   <CardTitle className="text-lg font-semibold">
                     Order #{order.orderNumber}
@@ -134,12 +144,14 @@ export default function MyOrders() {
                     "px-3 py-1 rounded-full text-xs font-semibold"
                   )}
                 >
-                  {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
+                  {order.status.charAt(0).toUpperCase() +
+                    order.status.slice(1)}
                 </Badge>
               </CardHeader>
 
               <CardContent className="space-y-4">
-                <div className="flex flex-col md:flex-row md:justify-between gap-4">
+                <div className="flex flex-col md:flex-row md:justify-between gap-6">
+                  {/* Order details */}
                   <div className="flex-1 space-y-2 text-sm text-gray-700">
                     <div>
                       <span className="font-medium">Shipping Address:</span>{" "}
@@ -158,13 +170,14 @@ export default function MyOrders() {
                     </div>
                   </div>
 
-                  <div className="flex flex-row flex-wrap gap-4">
+                  {/* Product images */}
+                  <div className="flex flex-wrap gap-4 justify-start">
                     {order.items.slice(0, 3).map((item) => (
                       <div
                         key={item.id}
-                        className="flex flex-col items-center w-[120px]"
+                        className="flex flex-col items-center min-w-[100px] max-w-[120px] flex-1"
                       >
-                        <div className="relative w-[120px] h-[120px] border rounded-md overflow-hidden bg-gray-100">
+                        <div className="relative w-full aspect-square border rounded-md overflow-hidden bg-gray-100">
                           <Image
                             src={
                               item.product.images[0]?.imageUrl || "/logo.png"
@@ -189,14 +202,15 @@ export default function MyOrders() {
 
                 <Separator className="my-2" />
 
-                <div className="flex flex-col md:flex-row md:justify-between md:items-center gap-2 text-xs text-gray-500">
+                {/* Action buttons */}
+                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 text-xs text-gray-500">
                   <span>Order ID: {order.id}</span>
-                  <div className="flex gap-2 w-full md:w-auto">
+                  <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => refetch()}
-                      className="w-full md:w-auto"
+                      className="w-full sm:w-auto"
                     >
                       Refresh
                     </Button>
@@ -205,8 +219,8 @@ export default function MyOrders() {
                         variant="destructive"
                         size="sm"
                         disabled={cancellingId === order.id}
-                        onClick={async () => handleCancellation(order?.id)}
-                        className="w-full md:w-auto"
+                        onClick={() => handleCancellation(order.id)}
+                        className="w-full sm:w-auto"
                       >
                         {cancellingId === order.id
                           ? "Cancelling..."
