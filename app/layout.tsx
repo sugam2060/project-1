@@ -13,6 +13,7 @@ const RalewayFont = Raleway({
 
 
 export const metadata: Metadata = {
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),
   title: {
     default: "Kalika Kasta Furniture Udyog | Quality Wooden Furniture in Dhangadhi, Nepal",
     template: "%s | Kalika Kasta Furniture Udyog",
