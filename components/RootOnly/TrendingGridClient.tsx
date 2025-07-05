@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import React, { useCallback, useEffect, useState } from "react";
 import { useInView } from "react-intersection-observer";
@@ -73,14 +73,16 @@ const TrendingGridClient: React.FC<TrendingGridClientProps> = ({
             <div
               key={`${item.id}-${item.product.slug}`}
               ref={isSecondLast ? ref : undefined}
-              className="w-full h-[360px] flex justify-center"
+              className="w-full h-[420px] flex justify-center"
             >
-              <ProductsCard
-                product={item.product}
-                className="rounded-2xl shadow-md h-full w-full flex flex-col"
-                imageClassName="rounded-t-2xl h-48 object-cover w-full"
-                contentClassName="p-3 rounded-b-2xl bg-white flex-1"
-              />
+              <div className="w-full max-w-[340px] h-full">
+                <ProductsCard
+                  product={item.product}
+                  className="rounded-2xl shadow-md h-full w-full flex flex-col"
+                  imageClassName="rounded-t-2xl h-56 object-cover w-full"
+                  contentClassName="p-4 rounded-b-2xl bg-white flex-1"
+                />
+              </div>
             </div>
           );
         })}
@@ -98,4 +100,4 @@ const TrendingGridClient: React.FC<TrendingGridClientProps> = ({
   );
 };
 
-export default TrendingGridClient; 
+export default TrendingGridClient;
