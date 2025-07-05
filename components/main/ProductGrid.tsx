@@ -205,22 +205,24 @@ export default function ProductGrid({
             )}
           </div>
 
-          <div className={cn("mx-2 mb-3", className)}>
+          <div
+            className={cn(
+              "grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 justify-items-center gap-4 mx-2 mb-3",
+              className
+            )}
+          >
             {safeProducts.length > 0 ? (
               safeProducts.map((p) => (
-                <div key={p.id} className="flex justify-center mb-4">
-                  <div className="w-full max-w-md">
-                    <ProductsCard
-                      product={p}
-                      className="transition-transform duration-300 hover:scale-[1.025] hover:shadow-xl border-0 shadow-md bg-gradient-to-br from-white via-zinc-50 to-zinc-100 min-h-[400px] h-[420px] w-full"
-                      imageClassName="bg-gradient-to-tr from-zinc-200 via-zinc-100 to-white h-56"
-                      contentClassName="bg-white/80 backdrop-blur-sm rounded-b-lg"
-                    />
-                  </div>
-                </div>
+                <ProductsCard
+                  key={p.id}
+                  product={p}
+                  className="transition-transform duration-300 hover:scale-[1.025] hover:shadow-xl border-0 shadow-md bg-gradient-to-br from-white via-zinc-50 to-zinc-100 min-h-[400px] h-[420px] w-full max-w-md"
+                  imageClassName="bg-gradient-to-tr from-zinc-200 via-zinc-100 to-white h-56"
+                  contentClassName="bg-white/80 backdrop-blur-sm rounded-b-lg"
+                />
               ))
             ) : (
-              <div className="w-full flex flex-col items-center justify-center min-h-[300px] text-center">
+              <div className="w-full flex flex-col items-center justify-center min-h-[300px] text-center col-span-full">
                 <p className="text-muted-foreground text-base sm:text-lg font-medium">
                   {hasActiveFilters
                     ? "No products found matching your filters."
@@ -240,7 +242,7 @@ export default function ProductGrid({
             )}
           </div>
 
-          {/* infinite loader */}
+          {/* Infinite loader */}
           {hasNextPage && (
             <div ref={ref} className="flex justify-center items-center p-4">
               {isFetchingNextPage && (
