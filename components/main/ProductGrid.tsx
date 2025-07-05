@@ -209,12 +209,14 @@ export default function ProductGrid({
             {safeProducts.length > 0 ? (
               safeProducts.map((p) => (
                 <div key={p.id} className="flex justify-center mb-4">
-                  <ProductsCard
-                    product={p}
-                    className="transition-transform duration-300 hover:scale-[1.025] hover:shadow-xl border-0 shadow-md bg-gradient-to-br from-white via-zinc-50 to-zinc-100 min-h-[400px] h-[420px]"
-                    imageClassName="bg-gradient-to-tr from-zinc-200 via-zinc-100 to-white h-56"
-                    contentClassName="bg-white/80 backdrop-blur-sm rounded-b-lg"
-                  />
+                  <div className="w-full max-w-md">
+                    <ProductsCard
+                      product={p}
+                      className="transition-transform duration-300 hover:scale-[1.025] hover:shadow-xl border-0 shadow-md bg-gradient-to-br from-white via-zinc-50 to-zinc-100 min-h-[400px] h-[420px] w-full"
+                      imageClassName="bg-gradient-to-tr from-zinc-200 via-zinc-100 to-white h-56"
+                      contentClassName="bg-white/80 backdrop-blur-sm rounded-b-lg"
+                    />
+                  </div>
                 </div>
               ))
             ) : (
