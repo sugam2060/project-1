@@ -9,19 +9,14 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import {
-  Card,
-  CardContent
-} from "@/components/ui/card"
 import { User } from "lucide-react";
-
-
+import AddressSection from "./AddressSection";
+import PasswordSection from "./PasswordSection";
 
 type Props = {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 };
-
 
 export default function ProfileDialog({ open, onOpenChange }: Props) {
   return (
@@ -36,22 +31,24 @@ export default function ProfileDialog({ open, onOpenChange }: Props) {
             Manage your profile information, addresses, and security settings.
           </DialogDescription>
         </DialogHeader>
-        <div className="flex justify-center items-center">
-          <Tabs defaultValue="account">
-            <TabsList className="gap-2 w-full">
-              <TabsTrigger value="account" className="w-full">Account</TabsTrigger>
-              <TabsTrigger value="addresses" className="w-full">Addresses</TabsTrigger>
-              {/* <TabsTrigger value="password" className="w-full">Password</TabsTrigger> */}
-            </TabsList>
-            <TabsContent value="account" className="min-w-[50vw]">
-                <Card className="w-full">
-                  <CardContent className="space-y-2">
-                        <div>
-                            
-                        </div>
-                  </CardContent>
-                </Card>
-            </TabsContent>
+        <div className="flex-1 overflow-hidden">
+          <Tabs defaultValue="addresses" className="h-full flex flex-col">
+            <div className="px-6 py-4 border-b">
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="addresses">Addresses</TabsTrigger>
+                <TabsTrigger value="password">Password</TabsTrigger>
+              </TabsList>
+            </div>
+            
+            <div className="flex-1 overflow-auto p-6">
+              <TabsContent value="addresses" className="h-full m-0">
+                <AddressSection />
+              </TabsContent>
+              
+              <TabsContent value="password" className="h-full m-0">
+                <PasswordSection />
+              </TabsContent>
+            </div>
           </Tabs>
         </div>
       </DialogContent>

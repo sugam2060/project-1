@@ -15,6 +15,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
 const citySchema = z.object({
@@ -78,58 +79,84 @@ export default function ManageLocations() {
   };
 
   return (
-    <div className="border-2 rounded-lg p-4 space-y-4" style={{ minHeight: 350, maxHeight: 350, height: 350 }}>
-      <h3 className="text-center font-semibold text-xl mb-2">Manage Locations</h3>
-      <div className="mb-4 flex flex-col h-[170px]">
-        <div className="font-semibold mb-1">Existing Locations:</div>
-        <ScrollArea className="w-full h-full max-h-[130px] rounded">
-          {isLoading ? (
-            <div className="flex items-center gap-2 text-gray-500"><span className="animate-spin h-4 w-4 border-2 border-t-transparent border-gray-400 rounded-full inline-block"></span>Loading...</div>
-          ) : locations.length === 0 ? (
-            <div className="text-gray-500">No locations found.</div>
-          ) : (
-            <ul className="flex flex-col gap-2 pr-2">
-              {locations.map((loc) => (
-                <li key={loc.id} className="bg-gray-100 justify-between  px-3 py-1 rounded text-sm flex items-center gap-2">
-                  <span>{loc.city}</span>
+    <Card>
+      <CardHeader>
+        <CardTitle>Manage Locations</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)}>
+            <FormField
+              control={form.control}
+              name="city"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="font-semibold text-base capitalize">
+                    Add New Location
+                  </FormLabel>
+                  <FormControl>
+                    <Input 
+                      placeholder="Enter city name" 
+                      {...field} 
+                      disabled={actionLoading}
+                      className="bg-white"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            {formError && (
+              <div className="py-1 mt-2 rounded-md bg-red-500/90 text-black font-semibold text-center px-2 space-y-1">
+                {formError}
+              </div>
+            )}
+            <Button
+              disabled={actionLoading}
+              type="submit"
+              className="w-full cursor-pointer my-2 relative"
+            >
+              Add Location
+              {actionLoading && (
+                <span className="absolute right-8 top-1/2 -translate-x-1/2 -translate-y-1/2 animate-spin h-4 w-4 border-2 border-t-transparent border-white rounded-full inline-block"></span>
+              )}
+            </Button>
+          </form>
+        </Form>
+        <hr className="border-black my-4" />
+
+        {/* Existing Locations Display */}
+        <div className="h-[210px]">
+          <div className="font-semibold mb-2">Existing Locations:</div>
+          <ScrollArea className="h-[180px]">
+            {isLoading ? (
+              <div className="flex items-center gap-2 text-gray-500">
+                <span className="animate-spin h-4 w-4 border-2 border-t-transparent border-gray-400 rounded-full inline-block"></span>
+                Loading...
+              </div>
+            ) : locations.length === 0 ? (
+              <div className="text-gray-500">No locations found.</div>
+            ) : (
+              locations.map((loc) => (
+                <div key={loc.id} className="flex items-center justify-between p-2">
+                  <span className="font-medium">{loc.city}</span>
                   <Button
                     type="button"
                     variant="destructive"
-                    size="sm"
-                    onClick={() => handleDelete(loc.id)}
                     disabled={actionLoading}
+                    onClick={() => handleDelete(loc.id)}
                   >
-                    Delete
+                    Remove
+                    {actionLoading && (
+                      <span className="animate-spin h-4 w-4 border-2 border-t-transparent border-white rounded-full inline-block ml-2"></span>
+                    )}
                   </Button>
-                </li>
-              ))}
-            </ul>
-          )}
-        </ScrollArea>
-      </div>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="flex gap-2 items-end">
-          <FormField
-            control={form.control}
-            name="city"
-            render={({ field }) => (
-              <FormItem className="w-full">
-                <FormLabel>City</FormLabel>
-                <FormControl>
-                  <Input placeholder="Add new city" {...field} disabled={actionLoading} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
+                </div>
+              ))
             )}
-          />
-          <Button type="submit" disabled={actionLoading}>
-            {actionLoading ? <span className="animate-spin h-4 w-4 border-2 border-t-transparent border-white rounded-full inline-block"></span> : 'Add'}
-          </Button>
-        </form>
-      </Form>
-      {formError && (
-        <div className="text-red-500 text-sm text-center mt-2">{formError}</div>
-      )}
-    </div>
+          </ScrollArea>
+        </div>
+      </CardContent>
+    </Card>
   );
 }

@@ -1,19 +1,10 @@
 import React, { Suspense } from "react";
 import Image from "next/image";
-import { getRecentInteriorImages } from "@/actions/ManagesMisc/InteriorPageMgmt";
-
-function GallerySkeleton() {
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      {[1, 2, 3].map((i) => (
-        <div
-          key={i}
-          className="w-full aspect-[4/5] rounded-lg bg-zinc-200 animate-pulse shadow-inner"
-        />
-      ))}
-    </div>
-  );
-}
+import { getInteriorCategories, getInteriorImagesByCategory } from "@/actions/ManagesMisc/InteriorPageMgmt";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { MobileCategoryFilter } from "@/components/RootOnly/MobileCategoryFilter";
+import UniversalLoader from "@/components/main/UniversalLoader";
+import Link from "next/link";
 
 // function HeroSkeleton() {
 //   return (
@@ -27,15 +18,63 @@ const fallbackImages = [
   "/interior_assets/interior-3.jpg",
 ];
 
-const InteriorPageContent = async () => {
-  let recentImages: string[] = [];
+// Category Gallery Component
+const CategoryGallery = async ({ categoryId }: { categoryId: string }) => {
+  let images: string[] = [];
+  
   try {
-    recentImages = await getRecentInteriorImages();
+    images = await getInteriorImagesByCategory(categoryId);
   } catch (error) {
-    console.error("Failed to load recent interior images:", error);
+    console.error("Failed to load images for category:", error);
   }
 
-  const heroImage = recentImages[0] || fallbackImages[0];
+  if (images.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-lg text-gray-600 mb-4">No images available for this category yet.</p>
+        <p className="text-sm text-gray-500">Please check back later for new projects.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
+      {images.map((src: string, idx: number) => (
+        <div
+          key={idx}
+          className="relative w-full aspect-square rounded-lg overflow-hidden shadow-md group hover:shadow-lg transition-all duration-300"
+        >
+          <Image
+            src={src}
+            alt={`Interior project ${idx + 1}`}
+            fill
+            className="object-cover group-hover:scale-105 transition-transform duration-500 ease-in-out"
+            loading="lazy"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          />
+        </div>
+      ))}
+    </div>
+  );
+};
+
+interface InteriorCategory {
+  id: string;
+  name: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
+const InteriorPageContent = async () => {
+  let categories: InteriorCategory[] = [];
+  
+  try {
+    categories = await getInteriorCategories();
+  } catch (error) {
+    console.error("Failed to load interior categories:", error);
+  }
+
+  const heroImage =fallbackImages[0];
 
   return (
     <div className="min-h-screen bg-white text-zinc-800 font-sans">
@@ -145,34 +184,46 @@ const InteriorPageContent = async () => {
         <p>
           Whether you&apos;re building a new space or revamping an old one, our team
           brings expertise, creativity, and commitment to every project. We
-          don’t just decorate; we design experiences.
+          don&apos;t just decorate; we design experiences.
         </p>
       </section>
 
       {/* Gallery Section */}
       <section className="max-w-6xl mx-auto px-4 pb-20">
         <h2 className="text-2xl md:text-3xl font-bold text-center mb-8">
-          Our Recent Interior Projects
+          Our Interior Projects by Category
         </h2>
-        {recentImages.length === 0 ? (
-          <GallerySkeleton />
+        {categories.length === 0 ? (
+          <div className="text-center py-12">
+            <p className="text-lg text-gray-600 mb-4">No interior categories available yet.</p>
+            <p className="text-sm text-gray-500">Please check back later for our interior design projects.</p>
+          </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-6">
-            {recentImages.map((src, idx) => (
-              <div
-                key={idx}
-                className="relative w-full aspect-square rounded-lg overflow-hidden shadow-md group"
-              >
-                <Image
-                  src={src}
-                  alt={`Interior project ${idx + 1}`}
-                  fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-500 ease-in-out"
-                  loading="lazy"
-                  sizes="(max-width: 768px) 100vw, 33vw"
-                />
-              </div>
-            ))}
+          <div className="w-full">
+            {/* Mobile: Popover Filter */}
+            <MobileCategoryFilter 
+              categories={categories} 
+              defaultCategoryId={categories[0]?.id || ""} 
+            />
+
+            {/* Desktop: Tabs */}
+            <div className="hidden md:block">
+              <Tabs defaultValue={categories[0]?.id || ""} className="w-full">
+                <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 mb-8 max-w-4xl mx-auto">
+                  {categories.map((category) => (
+                    <TabsTrigger key={category.id} value={category.id} className="text-xs sm:text-sm">
+                      {category.name}
+                    </TabsTrigger>
+                  ))}
+                </TabsList>
+                
+                {categories.map((category) => (
+                  <TabsContent key={category.id} value={category.id}>
+                    <CategoryGallery categoryId={category.id} />
+                  </TabsContent>
+                ))}
+              </Tabs>
+            </div>
           </div>
         )}
       </section>
@@ -187,13 +238,10 @@ const InteriorPageContent = async () => {
             Schedule a consultation with our expert interior designers and bring
             your vision to life with Kalika Kasta.
           </p>
-          <a
-            href="mailto:info@kalikakastafurniture.com"
-            aria-label="Contact Kalika Kasta Interior Design Team"
-            className="inline-block bg-zinc-900 text-white px-8 py-3 rounded-full font-semibold shadow hover:bg-zinc-800 transition-colors text-lg"
-          >
+          <Link href={'/contact'} aria-label="Contact Kalika Kasta Interior Design Team"
+            className="inline-block bg-zinc-900 text-white px-8 py-3 rounded-full font-semibold shadow hover:bg-zinc-800 transition-colors text-lg">
             Contact Us
-          </a>
+          </Link>
         </div>
       </section>
     </div>
@@ -201,7 +249,7 @@ const InteriorPageContent = async () => {
 };
 
 const InteriorPage = () => (
-  <Suspense fallback={<GallerySkeleton />}>
+  <Suspense fallback={<UniversalLoader text="Loading Interior Projects..." fullScreen={true} />}>
     <InteriorPageContent />
   </Suspense>
 );

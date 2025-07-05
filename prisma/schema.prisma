@@ -132,6 +132,8 @@ model addresses {
   addressLine String
   postalCode  String?
   phone       String?
+  isDefault   Boolean  @default(false)
+  createdAt   DateTime @default(now())
   user        User     @relation(fields: [userId], references: [id],onDelete: Cascade)
   location    locations @relation(fields: [locationId], references: [id],onDelete: Cascade)
   orders      Order[]
@@ -178,7 +180,20 @@ model OrderItem {
   @@index([productId])
 }
 
-model RecentInteriorProjectImage {
-  id        String   @id @default(uuid())
-  imageUrl  String[]
+model InteriorCategory {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  images      InteriorProjectImage[]
+}
+
+model InteriorProjectImage {
+  id                String   @id @default(uuid())
+  imageUrl          String
+  categoryId        String
+  category          InteriorCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  createdAt         DateTime @default(now())
+  
+  @@index([categoryId])
 }

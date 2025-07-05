@@ -5,7 +5,6 @@ import { revalidateTag, unstable_cache } from 'next/cache';
 
 export const fetchLocations = unstable_cache(async () => {
   const locations = await db.locations.findMany({ orderBy: { city: 'asc' } });
-  console.log(locations);
   return locations;
 }, [], { revalidate: false, tags: ['locations'] });
 
