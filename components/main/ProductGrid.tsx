@@ -205,17 +205,20 @@ export default function ProductGrid({
             )}
           </div>
 
-          <div className={cn("mx-2 mb-3", className)}>
+          <div className={cn("mx-2 mb-3 flex justify-center", className)}>
             {safeProducts.length > 0 ? (
-              safeProducts.map((p) => (
-                <ProductsCard
-                  key={p.id}
-                  product={p}
-                  className="transition-transform duration-300 hover:scale-[1.025] hover:shadow-xl border-0 shadow-md bg-gradient-to-br from-white via-zinc-50 to-zinc-100 min-h-[400px] h-[420px]"
-                  imageClassName="bg-gradient-to-tr from-zinc-200 via-zinc-100 to-white h-56"
-                  contentClassName="bg-white/80 backdrop-blur-sm rounded-b-lg"
-                />
-              ))
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 max-w-7xl w-full">
+                {safeProducts.map((p) => (
+                  <div key={p.id} className="flex justify-center">
+                    <ProductsCard
+                      product={p}
+                      className="transition-transform duration-300 hover:scale-[1.025] hover:shadow-xl border-0 shadow-md bg-gradient-to-br from-white via-zinc-50 to-zinc-100 min-h-[400px] h-[420px] w-full max-w-xs"
+                      imageClassName="bg-gradient-to-tr from-zinc-200 via-zinc-100 to-white h-56"
+                      contentClassName="bg-white/80 backdrop-blur-sm rounded-b-lg"
+                    />
+                  </div>
+                ))}
+              </div>
             ) : (
               <div className="w-full flex flex-col items-center justify-center min-h-[300px] text-center">
                 <p className="text-muted-foreground text-base sm:text-lg font-medium">
