@@ -65,7 +65,7 @@ const TrendingGridClient: React.FC<TrendingGridClientProps> = ({
         Trending Products
       </h2>
 
-      <div className="grid mx-auto grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
         {products.map((item, idx) => {
           const isSecondLast = idx === products.length - 2;
 
@@ -73,7 +73,7 @@ const TrendingGridClient: React.FC<TrendingGridClientProps> = ({
             <div
               key={`${item.id}-${item.product.slug}`}
               ref={isSecondLast ? ref : undefined}
-              className="w-full h-[360px]"
+              className="w-full h-[360px] flex justify-center"
             >
               <ProductsCard
                 product={item.product}
