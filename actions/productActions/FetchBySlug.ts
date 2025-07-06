@@ -17,7 +17,6 @@ export const fetchSingleProduct = async (slug: string) => {
                 }
             }
         })
-        console.log(product)
         return product;
     } catch (error) {
         console.log("Error fetching product:", error);
