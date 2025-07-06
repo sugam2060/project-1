@@ -34,7 +34,7 @@ const ContactComponent = () => {
           subtitle: "@kalikakasta",
           description: "Watch our videos on TikTok",
           icon: <FaTiktok className="w-6 h-6 text-black" />,
-          href: "https://www.tiktok.com/@kalikakasta",
+          href: "https://www.tiktok.com/@kalika.kasta.furn?_t=ZS-8xnb5fDYd0O&_r=1",
           color: "hover:bg-gray-50 border-gray-200",
           buttonColor: "bg-black hover:bg-gray-800"
         }

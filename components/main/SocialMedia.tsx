@@ -16,7 +16,7 @@ interface Props {
 const socialLinks = [
   {
     title: 'Tiktok',
-    href: 'https://github.com/adrianhajdin/yc_directory/tree/main',
+    href: 'https://www.tiktok.com/@kalika.kasta.furn?_t=ZS-8xnb5fDYd0O&_r=1',
     icon: <FaTiktok className="w-5 h-5 text-[#010101] group-hover:text-[#69C9D0]" />,
     color: 'hover:bg-[#69C9D0]/10',
   },
