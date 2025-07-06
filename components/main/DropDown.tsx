@@ -59,13 +59,11 @@ const DropDown = () => {
               </Link>
             )}
 
-            {session?.user.role === 'USER' || session?.user.role === 'ADMIN' && (
-              <Link href="/orders">
-                <DropdownMenuItem className="capitalize">
-                  My Orders
-                </DropdownMenuItem>
-              </Link>
-            )}
+            <Link href="/orders">
+              <DropdownMenuItem className="capitalize">
+                My Orders
+              </DropdownMenuItem>
+            </Link>
 
             <DropdownMenuItem
               className="cursor-pointer"
